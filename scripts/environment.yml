@@ -1,0 +1,15 @@
+name: xray_cse6242
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip:
+    - pip 
+    - fastapi
+    - torch
+    - ipykernel
+    - scikit-learn
+    - torchvision
+    - pillow
+    - matplotlib
+    - seaborn
