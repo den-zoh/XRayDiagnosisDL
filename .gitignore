@@ -1,0 +1,4 @@
+.DS_Store
+model/__pycache__
+api/__pycache__
+api/cnn.pth
