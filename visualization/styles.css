@@ -1,3 +1,18 @@
+:root{
+	/* CSS HEX */
+	--cerulean: #0e8cd2;
+	--picton-blue: #16afeb;
+	--denim: #107cbd;
+	--endeavour: #0762ad;
+	--catalina-blue: #042d7f;
+	--green-vogue: #042761;
+	--cobalt: #044bb2;
+	--venice-blue: #064f8d;
+	--tory-blue: #1454a1;
+	--curious-blue: #219ccc;
+	--electric-cyan: #3edffd
+}
+
 /* Basic reset */
 * {
     margin: 0;
@@ -6,6 +21,10 @@
 }
 
 body {
+	background-image: url("images/other_slide_background.png") !important;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -15,6 +34,13 @@ body {
 h2 {
 	padding: 5px;
 	text-align: center;
+	color: var(--electric-cyan);
+}
+
+h3 {
+	padding: 5px;
+	text-align: left;
+	color: var(--electric-cyan);
 }
 
 .container {
@@ -30,12 +56,17 @@ h2 {
 }
 
 .left, .right {
+/* 
     background-color: #f0f0f0;
+ */
 }
 
 .middle {
-    flex: 0.7; /* Makes the middle column slightly narrower */
-    background-color: #e0e0e0;
+    flex: 0.7;
+	background-color: #0762ad4d
+/* 
+	rgba(128, 128, 128, 0.2);
+ */
 }
 #xray-image {
     width: 100%;
@@ -59,7 +90,6 @@ h2 {
 #confusion {
     width: 99%;
     height: 40%;
-    background-color: #ccc;
 }
 
 .thumbnail-container {
@@ -73,5 +103,9 @@ h2 {
 .thumbnail {
     flex-basis: 100%;
     height: 100%;
-    background-color: #ccc;
 }
+
+.thumbnail-border {
+    border: 2px solid var(--endeavour);
+}
+
