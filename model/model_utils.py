@@ -42,7 +42,10 @@ def model_transformations() -> Compose:
 def run_inference_on_image(model, image) -> tuple[str, np.ndarray]:
     """Running inference on a single image"""
 
-    img = Image.open(image).convert("L")
+    if isinstance(image, str):
+        img = Image.open(image).convert("L")
+    else:
+        img = image
 
     transformations = model_transformations()
 
