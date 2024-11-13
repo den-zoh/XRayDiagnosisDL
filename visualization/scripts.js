@@ -157,21 +157,47 @@ fileList.forEach(file => {
 const xraychooser = leftColumn.select("#xray-chooser-button-container")
     .append("svg")
     .attr("width", leftColumnWidth)
-    .attr("height", margin / 2 + leftColumnHeight * heightPercentage/2)
+    .attr("height", margin + leftColumnHeight * heightPercentage/2)
     
-xraychooser.append("rect")
-    .attr("x", 2 * (margin + width) -  2)
-    .attr("y", 10)
-    .attr("width", width)
-    .attr("height", height / 2)
-    .attr("rx", radius)
-    .attr("ry", radius)
+xraychooser.append("path")
+    .attr("d", `
+        M ${margin + 2 * width}, 10 
+        h ${width - radius} 
+        a ${radius},${radius} 0 0 1 ${radius},${radius} 
+        a ${radius},${radius} 0 0 1 -${radius},${radius} 
+        h -${width - radius}
+        z
+    `)
     .style("fill", "#3edffd")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
+    
+xraychooser.append("text")
+    .attr("x", 2 * (margin + width) + (margin + width) / 4 + margin/4)
+    .attr("y", height / 4 + 10)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .text("Use Sample XRay")
+    .style("fill", "#064f8d")
+    .style("font-family", "Arial, sans-serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
+    
+xraychooser.append("path")
+    .attr("d", `
+        M ${margin + 2 * width}, 10
+        h -${width - radius} 
+        a ${radius},${radius} 0 0 0 -${radius},${radius} 
+        a ${radius},${radius} 0 0 0 ${radius},${radius} 
+        h ${width - radius}
+        z
+    `)
+    .style("fill", "#0e8cd2")
+    .style("stroke", "#044bb2")
+    .style("stroke-width", 3); 
 
 xraychooser.append("text")
-    .attr("x", 2 * (margin + width) + width / 2)
+    .attr("x", margin + width + width / 2)
     .attr("y", height / 4 + 10)
     .attr("dy", "0.35em")
     .attr("text-anchor", "middle")
@@ -179,11 +205,7 @@ xraychooser.append("text")
     .style("fill", "#064f8d")
     .style("font-family", "Arial, sans-serif")
     .style("font-size", "16px")
-    .style("font-weight", "bold");
-    
-    
-    
-    
+    .style("font-weight", "bold"); 
     
     
 const confusion = d3.select("#confusion")
