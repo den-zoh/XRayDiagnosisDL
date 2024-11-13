@@ -82,11 +82,25 @@ h3 {
     margin-top: 10px;
     width: 100%;
     height: auto;
-    border: 1px solid var(--endeavour);
+    border: 1px solid ;
     padding: 10px;
     box-sizing: border-box;
 }
 
+#xray-chooser-list {
+    display: grid;
+    grid-template-columns: repeatvar(--endeavour)(3, 1fr);
+    gap: 10px;
+    max-height: 150px;
+    overflow-y: scroll;
+    background-color: var(--tory-blue);
+    border: 1px solid var(--endeavour);
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* 
 #xray-chooser-list {
     max-height: 150px;
     overflow-y: auto;
@@ -94,6 +108,7 @@ h3 {
     background-color: var(--tory-blue);
 
 }
+ */
 
 #xray-chooser-button-container {
     display: flex;

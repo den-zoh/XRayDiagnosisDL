@@ -121,23 +121,30 @@ const fileList = [
 ];
 
 const chooserList = document.querySelector("#xray-chooser-list");
+chooserList.style.display = "grid";
+chooserList.style.gridTemplateColumns = "repeat(3, 1fr)";
+chooserList.style.gap = "10px";
 
 fileList.forEach(file => {
     const fileItem = document.createElement("div");
-    fileItem.style.display = "flex";
-    fileItem.style.alignItems = "center";
-    fileItem.style.marginBottom = "5px";
-    fileItem.style.backgroundColor = "#0e8cd2";
+	fileItem.style.display = "flex";
+	fileItem.style.flexDirection = "column";
+	fileItem.style.alignItems = "center";
+	fileItem.style.backgroundColor = "white";
+	fileItem.style.border = "1px solid #ccc";
+	fileItem.style.padding = "10px";
+	fileItem.style.borderRadius = "4px";
 
     const fileImage = document.createElement("img");
     fileImage.src = file.thumbnail;
     fileImage.alt = file.name;
-    fileImage.style.width = "40px";
-    fileImage.style.height = "40px";
-    fileImage.style.marginRight = "10px";
+    fileImage.style.width = "100px";
+    fileImage.style.height = "100px";
 
     const fileName = document.createElement("span");
     fileName.textContent = file.name;
+    fileName.style.marginTop = "10px";
+    fileName.style.textAlign = "center";
 
     fileItem.appendChild(fileImage);
     fileItem.appendChild(fileName);
@@ -154,7 +161,7 @@ const xraychooser = leftColumn.select("#xray-chooser-button-container")
     
 xraychooser.append("rect")
     .attr("x", 2 * (margin + width) -  2)
-    .attr("y", 2)
+    .attr("y", 10)
     .attr("width", width)
     .attr("height", height / 2)
     .attr("rx", radius)
@@ -165,7 +172,7 @@ xraychooser.append("rect")
 
 xraychooser.append("text")
     .attr("x", 2 * (margin + width) + width / 2)
-    .attr("y", height / 4 + 2)
+    .attr("y", height / 4 + 10)
     .attr("dy", "0.35em")
     .attr("text-anchor", "middle")
     .text("Upload XRay...")
