@@ -46,7 +46,6 @@ h3 {
 .container {
     display: flex;
     width: 100%;
-/* 	max-width: 1200px;*/
 }
 
 /* Column styles */
@@ -56,9 +55,7 @@ h3 {
 }
 
 .left, .right {
-/* 
-    background-color: #f0f0f0;
- */
+
 }
 
 .middle {
@@ -78,6 +75,31 @@ h3 {
     justify-content: center;
     align-items: center; 
 }
+
+#xray-chooser-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--endeavour);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#xray-chooser-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    background-color: var(--tory-blue);
+
+}
+
+#xray-chooser-button-container {
+    display: flex;
+    justify-content: right;
+}
+
 
 
 #right-column {
