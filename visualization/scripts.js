@@ -216,10 +216,76 @@ const confusion = d3.select("#confusion")
 
 const tnContainer = rightColumn.append("div").classed("thumbnail-container", true);
 
+function drawEpochLineChart(svg, data, width, height) {
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const chart = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xScale = d3.scaleLinear()
+        .domain(d3.extent(data, d => d.epoch))
+        .range([0, chartWidth]);
+
+    const yScale = d3.scaleLog()
+        .domain([d3.max(data, d => d.loss), d3.min(data, d => d.loss)])
+        .range([0, chartHeight]);
+
+    const xAxis = d3.axisBottom(xScale).ticks(10);
+    const yAxis = d3.axisLeft(yScale).ticks(5, ".1");
+
+    chart.append("g")
+        .attr("transform", `translate(0, ${chartHeight})`)
+        .call(xAxis);
+
+    chart.append("g")
+        .call(yAxis);
+
+    const line = d3.line()
+        .x(d => xScale(d.epoch))
+        .y(d => yScale(d.loss));
+
+    chart.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    chart.selectAll(".point")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", d => xScale(d.epoch))
+        .attr("cy", d => yScale(d.loss))
+        .attr("r", 4)
+        .attr("fill", "red");
+}
+
 const thumbnail1 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
+    .attr("data-function", "drawEpochLineChart")
 	.style("background-color", "#ccc");
+
+const data = [
+	{ epoch: 1, loss: 0.3786 },
+	{ epoch: 2, loss: 0.1408 },
+	{ epoch: 3, loss: 0.0983 },
+	{ epoch: 4, loss: 0.0543 },
+	{ epoch: 5, loss: 0.0349 },
+	{ epoch: 6, loss: 0.0174 },
+	{ epoch: 7, loss: 0.0113 },
+	{ epoch: 8, loss: 0.0027 },
+	{ epoch: 9, loss: 0.0008 },
+	{ epoch: 10, loss: 0.0002 }
+];
+
+drawEpochLineChart(thumbnail1, data, 400, 200);
+
+
+// drawEpochLineChart("#zoomed-container", data, 600, 400);
 
 const thumbnail2 = tnContainer.append("svg")
 	.attr("id", "Confusion Matrix")
@@ -253,15 +319,15 @@ d3.selectAll(".thumbnail")
 		
 		const thumbnail = d3.select(this);
         const image = thumbnail.select("image").node();
-		const width = +image.getAttribute("width");
-		const height = +image.getAttribute("height");	
-	
-		confusion
-			.attr("viewBox", `0 0 ${width} ${height}`)
-			.attr("width", width)
-			.attr("height", height);
 		
 		if (image) {
+			const width = +image.getAttribute("width");
+			const height = +image.getAttribute("height");	
+		
+			confusion
+				.attr("viewBox", `0 0 ${width} ${height}`)
+				.attr("width", width)
+				.attr("height", height);
 			const clonedImage = image.cloneNode(true);
 			d3.select(clonedImage).classed("dynamic-image", true);
 			confusion.node().appendChild(clonedImage);
