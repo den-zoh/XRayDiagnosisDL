@@ -43,6 +43,27 @@ h3 {
 	color: var(--electric-cyan);
 }
 
+.xray-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.xray-header h2 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+}
+
+#xray-chooser-container {
+    margin-left: auto;
+}
+
+
+
 .container {
     display: flex;
     width: 100%;

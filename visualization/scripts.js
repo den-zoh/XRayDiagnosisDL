@@ -16,25 +16,49 @@ const rightColumnHeight = document.querySelector(".right").offsetHeight;
 const confusionWidth = rightColumnWidth; 
 const confusionHeight = rightColumnHeight / 2;
 
-
-const xraybuttons = leftColumn.select("#button-container")
-    .append("svg")
-    .attr("width", leftColumnWidth)
-    .attr("height", leftColumnHeight/2);
-
-
 const widthPercentage = 0.30;
-const heightPercentage = 0.2;
+const heightPercentage = 0.1;
 const radiusPercentage = 0.25;
 
-const containerWidth = xraybuttons.node().clientWidth;
-const containerHeight = xraybuttons.node().clientHeight;
+const containerWidth = leftColumn.node().clientWidth;
+const containerHeight = leftColumn.node().clientHeight;
 
 const width = containerWidth * widthPercentage;
 const height = containerHeight * heightPercentage;
 const radius = height * radiusPercentage;
 const margin = (containerWidth - 3 * width) / 2
 
+const xraychooser = leftColumn.select("#xray-chooser-container")
+    .append("svg")
+    .attr("width", leftColumnWidth)
+    .attr("height", margin / 2 + leftColumnHeight * heightPercentage/2)
+    
+xraychooser.append("rect")
+    .attr("x", 2 * (margin + width))
+    .attr("y", 5)
+    .attr("width", width)
+    .attr("height", height / 2)
+    .attr("rx", radius)
+    .attr("ry", radius)
+    .style("fill", "#3edffd")
+    .style("stroke", "#16afeb")
+    .style("stroke-width", 3);
+
+xraychooser.append("text")
+    .attr("x", 2 * (margin + width) + width / 2)
+    .attr("y", 5 + height / 4)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .text("Upload XRay...")
+    .style("fill", "#064f8d")
+    .style("font-family", "Arial, sans-serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
+
+const xraybuttons = leftColumn.select("#button-container")
+    .append("svg")
+    .attr("width", leftColumnWidth)
+    .attr("height", leftColumnHeight/2)
 
 xraybuttons.append("path")
     .attr("d", `
@@ -49,6 +73,17 @@ xraybuttons.append("path")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
 
+xraybuttons.append("text")
+    .attr("x", 2 * (margin + width) + width / 4 + margin / 2)
+    .attr("y", 5 + height / 4)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .text("Segmentation")
+    .style("fill", "#064f8d")
+    .style("font-family", "Arial, sans-serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
+
 xraybuttons.append("rect")
 	.attr("x", margin + width)
     .attr("y", 5)
@@ -57,6 +92,17 @@ xraybuttons.append("rect")
     .style("fill", "#3edffd")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
+
+xraybuttons.append("text")
+    .attr("x", (margin + width) + width / 2)
+    .attr("y", 5 + height / 4)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .text("Heat Map")
+    .style("fill", "#064f8d")
+    .style("font-family", "Arial, sans-serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
 
 xraybuttons.append("path")
     .attr("d", `
@@ -71,7 +117,16 @@ xraybuttons.append("path")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
 
-    
+xraybuttons.append("text")
+    .attr("x", margin + width / 2)
+    .attr("y", 5 + height / 4)
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .text("XRay")
+    .style("fill", "#064f8d")
+    .style("font-family", "Arial, sans-serif")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
     
 const confusion = d3.select("#confusion")
     .attr("viewBox", "0 0 785 624")
