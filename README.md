@@ -1,12 +1,22 @@
-# TODO: Project Title 
+# Classifying Pneumonia and COVID X-Rays Using Deep Learning
 
 ## Desciption
-TODO
+It is more important than ever to equip medical practitioners with tools to quickly and accurately diagnose respiratory illness while offering patients convenient and cost-effective medical care. As of 2022, there are only 12 deep learning products FDA-approved for Computer Aided Diagnosis, none of which address COVID-19. This package includes a CNN classification model (trained on chest x-ray images), prediction API, and web visualization that assists medical practitioners in distinguishing between COVID, pneumonia, and "no diagnosis" within seconds and with over 95% accuracy. 
 
 ## Installation
 ### Running the API locally
-1. TODO: necessary installs (e.g., flask)
-2. From the `XRayDiagnosisDL` directory, run `python -m api/prediction`
+1. Ensure Python version is >= 3.8
+
+        python 
+        exit()
+
+2. Install Flask [TODO: what other installations are necessary? Can someone pull this down and see what's needed?]
+
+        pip install Flask
+
+3. From the `XRayDiagnosisDL` directory, start the API
+
+        python -m api/prediction
 
 ### Running the visualization
 TODO
