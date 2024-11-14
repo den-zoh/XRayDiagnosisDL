@@ -274,7 +274,7 @@ function drawEpochLineChart(svg, data, width, height, fontSize) {
         .attr("text-anchor", "middle")
         .style("font-size", labelsSize)
         .style("fill", "#042d7f")
-        .text("Loss");
+        .text("Training Loss");
         
     chart.append("text")
         .attr("x", width / 2)
@@ -283,7 +283,7 @@ function drawEpochLineChart(svg, data, width, height, fontSize) {
         .style("font-size", titleSize)
         .style("font-weight", "bold")
         .style("fill", "#042d7f")
-        .text("Epochs vs Training Loss");    
+        .text("Epoch vs Training Loss");    
 
     const line = d3.line()
         .x(d => xScale(d.epoch))
@@ -310,7 +310,12 @@ function drawEpochLineChart(svg, data, width, height, fontSize) {
 const thumbnail1 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
-    .attr("data-function", "drawEpochLineChart")
+    .style("background-color", "#ccc");
+    
+const thumbnail2 = tnContainer.append("svg")
+    .classed("thumbnail", true)
+    .attr("viewBox", "0 0 400 200")
+	.attr("data-function", "drawEpochLineChart")
 	.style("background-color", "#bef4fd");
 
 const data = [
@@ -326,12 +331,9 @@ const data = [
 	{ epoch: 10, loss: 0.0002 }
 ];
 
-drawEpochLineChart(thumbnail1, data, 400, 200, "small");
+drawEpochLineChart(thumbnail2, data, 400, 200, "small");
 
-
-// drawEpochLineChart("#zoomed-container", data, 600, 400);
-
-const thumbnail2 = tnContainer.append("svg")
+const thumbnail3 = tnContainer.append("svg")
 	.attr("id", "Confusion Matrix")
     .classed("thumbnail", true)
     .classed("thumbnail-border", true)
@@ -343,11 +345,6 @@ const thumbnail2 = tnContainer.append("svg")
     .attr("width", 785)
     .attr("height", 624)
     .style("transform", `scale(${200 / 785}, ${200 / 624})`);
-    
-const thumbnail3 = tnContainer.append("svg")
-    .classed("thumbnail", true)
-    .attr("viewBox", "0 0 400 200")
-	.style("background-color", "#ccc");
 
 const thumbnail4 = tnContainer.append("svg")
     .classed("thumbnail", true)
