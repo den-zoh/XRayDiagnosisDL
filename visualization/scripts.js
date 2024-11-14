@@ -216,8 +216,19 @@ const confusion = d3.select("#confusion")
 
 const tnContainer = rightColumn.append("div").classed("thumbnail-container", true);
 
-function drawEpochLineChart(svg, data, width, height) {
-    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+function drawEpochLineChart(svg, data, width, height, fontSize) {
+	const margin = { 
+    	top: height * 0.1, 
+    	right: width * 0.025, 
+    	bottom: height * 0.225, 
+    	left: width * 0.125
+    };
+    const tickSize = fontSize === "small" ? "10pt" : "20pt";
+    const labelsSize = fontSize === "small" ? "14pt" : "30pt";
+    const titleSize = fontSize === "small" ? "16pt" : "36pt";
+    const yoffset = fontSize === "small" ? 3* margin.bottom/4 :  margin.bottom/2 - 7;
+
+    
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -237,10 +248,42 @@ function drawEpochLineChart(svg, data, width, height) {
 
     chart.append("g")
         .attr("transform", `translate(0, ${chartHeight})`)
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+        .style("font-size", tickSize)
+        .style("fill", "#000");
 
     chart.append("g")
-        .call(yAxis);
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", tickSize)
+        .style("fill", "#000");
+    
+    chart.append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight + yoffset)
+        .attr("text-anchor", "middle")
+        .style("font-size", labelsSize)
+        .style("fill", "#042d7f")
+        .text("Epoch");
+    
+    chart.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", -100)
+        .attr("text-anchor", "middle")
+        .style("font-size", labelsSize)
+        .style("fill", "#042d7f")
+        .text("Loss");
+        
+    chart.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", titleSize)
+        .style("font-weight", "bold")
+        .style("fill", "#042d7f")
+        .text("Epochs vs Training Loss");    
 
     const line = d3.line()
         .x(d => xScale(d.epoch))
@@ -249,8 +292,8 @@ function drawEpochLineChart(svg, data, width, height) {
     chart.append("path")
         .datum(data)
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 2)
+        .attr("stroke", "#042d7f")
+        .attr("stroke-width", 3)
         .attr("d", line);
 
     chart.selectAll(".point")
@@ -259,15 +302,16 @@ function drawEpochLineChart(svg, data, width, height) {
         .append("circle")
         .attr("cx", d => xScale(d.epoch))
         .attr("cy", d => yScale(d.loss))
-        .attr("r", 4)
-        .attr("fill", "red");
+        .attr("r", 5)
+        .attr("fill", "#042d7f");
+        
 }
 
 const thumbnail1 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
     .attr("data-function", "drawEpochLineChart")
-	.style("background-color", "#ccc");
+	.style("background-color", "#bef4fd");
 
 const data = [
 	{ epoch: 1, loss: 0.3786 },
@@ -282,7 +326,7 @@ const data = [
 	{ epoch: 10, loss: 0.0002 }
 ];
 
-drawEpochLineChart(thumbnail1, data, 400, 200);
+drawEpochLineChart(thumbnail1, data, 400, 200, "small");
 
 
 // drawEpochLineChart("#zoomed-container", data, 600, 400);
@@ -312,8 +356,9 @@ const thumbnail4 = tnContainer.append("svg")
 
 d3.selectAll(".thumbnail")
     .on("click", function() {
-    	confusion.selectAll(".dynamic-image").remove();
-        confusion.selectAll(".dynamic-element").remove();
+    	// confusion.selectAll(".dynamic-image").remove();
+//         confusion.selectAll(".dynamic-element").remove();
+		confusion.selectAll("*").remove();
     	d3.selectAll(".thumbnail").classed("thumbnail-border", false);
         d3.select(this).classed("thumbnail-border", true);
 		
@@ -340,11 +385,18 @@ d3.selectAll(".thumbnail")
 				.attr("height", height)
 				.style("transform", "none");			
 		} else {
-			thumbnail.selectAll("*").each(function() {
-				const element = this.cloneNode(true);
-				d3.select(element).classed("dynamic-element", true);
-				confusion.node().appendChild(element);
-			});
+			confusion
+				.attr("class", "dynamic-element")
+        		.style("background-color", "#bef4fd99")
+			const chartType = thumbnail.attr("data-function");
+			if (chartType === "drawEpochLineChart") {
+				drawEpochLineChart(confusion, data, 800, 700, "large");
+			}
+			// thumbnail.selectAll("*").each(function() {
+// 				const element = this.cloneNode(true);
+// 				d3.select(element).classed("dynamic-element", true);
+// 				confusion.node().appendChild(element);
+// 			});
 		}
     });
     
