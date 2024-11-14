@@ -111,14 +111,15 @@ const chooser = d3.select("#xray-chooser-container")
     .attr("height", "20%");
 
 const fileList = [
-    { name: "File 1", thumbnail: "images/thumbnail1.png" },
-    { name: "File 2", thumbnail: "images/thumbnail2.png" },
-    { name: "File 3", thumbnail: "images/thumbnail3.png" },
-    { name: "File 4", thumbnail: "images/thumbnail4.png" },
-    { name: "File 5", thumbnail: "images/thumbnail5.png" },
-    { name: "File 6", thumbnail: "images/thumbnail6.png" },
-    { name: "File 7", thumbnail: "images/thumbnail7.png" },
+    { name: "Sample 1", thumbnail: "images/thumbnail1.png" },
+    { name: "Sample 2", thumbnail: "images/thumbnail2.png" },
+    { name: "Sample 3", thumbnail: "images/thumbnail3.png" },
+    { name: "Sample 4", thumbnail: "images/thumbnail4.png" },
+    { name: "Sample 5", thumbnail: "images/thumbnail5.png" },
+    { name: "Sample 6", thumbnail: "images/thumbnail6.png" },
+    { name: "Sample 7", thumbnail: "images/thumbnail7.png" },
 ];
+//  		.style("background-color", "#bef4fd99")
 
 const chooserList = document.querySelector("#xray-chooser-list");
 chooserList.style.display = "grid";
@@ -130,8 +131,8 @@ fileList.forEach(file => {
 	fileItem.style.display = "flex";
 	fileItem.style.flexDirection = "column";
 	fileItem.style.alignItems = "center";
-	fileItem.style.backgroundColor = "white";
-	fileItem.style.border = "1px solid #ccc";
+	fileItem.style.backgroundColor = "#bef4fd";
+	fileItem.style.border = "1px solid #042d7f";
 	fileItem.style.padding = "10px";
 	fileItem.style.borderRadius = "4px";
 
@@ -343,9 +344,9 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
         .sort(null);
 
     const chartGroup = svg.append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${width / 4 + margin.left / 2}, ${height / 2})`);
 
-    // Draw outer pie
+    // outer pie
     chartGroup.selectAll(".outer-slice")
         .data(pie(data.outer))
         .enter()
@@ -353,10 +354,10 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
         .attr("class", "outer-slice")
         .attr("d", outerArc)
         .attr("fill", (d, i) => outerColorScale(i))
-        .style("stroke", "#fff")
+        .style("stroke", "#bef4fd")
         .style("stroke-width", "2px");
 
-    // Draw inner pie
+    // inner pie
     chartGroup.selectAll(".inner-slice")
         .data(pie(data.inner))
         .enter()
@@ -364,10 +365,10 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
         .attr("class", "inner-slice")
         .attr("d", innerArc)
         .attr("fill", (d, i) => innerColorScale(i))
-        .style("stroke", "#fff")
+        .style("stroke", "#bef4fd")
         .style("stroke-width", "2px");
 
-    // Add labels to outer pie
+    // labels outer pie
     chartGroup.selectAll(".outer-label")
         .data(pie(data.outer))
         .enter()
@@ -396,7 +397,86 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
 		.attr("dy", "0.35em") 
 		.style("font-size", tickSize)
 		.attr("fill", "#bef4fd")
-		.text(d => d.data.label);
+		.text(d => d.data.label);	
+		
+	svg.append("text")
+		.attr("x", width - margin.right)
+		.attr("y", margin.top)
+		.attr("text-anchor", "end")
+		.style("font-size", titleSize)
+		.style("font-family", "Arial, sans-serif")
+		.style("fill", "#042d7f")
+		.each(function() {
+			const titleLines = ["Distribution", "of", "Images"];
+			titleLines.forEach((line, i) => {
+				d3.select(this)
+					.append("tspan")
+					.text(line)
+					.attr("x", width - margin.right)
+					.attr("dy", i === 0 ? "0em" : "1.2em");
+			});
+		});
+		
+	if (fontSize != "small"){	
+		const legendData = [
+			{ label: "Train", color: "#0762ad", pct:"80%"},
+			{ label: "Normal", color: "#0762ad", pct:"50%" },
+			{ label: "Pneumonia", color: "#438fce", pct:"15%" },
+			{ label: "COVID", color: "#8ac5f7", pct:"15%" },
+			{ label: "Test", color: "#0492c9", pct:"20%" },
+			{ label: "Normal", color: "#0492c9", pct:"10%" },
+			{ label: "Pneumonia", color: "#41b4e0", pct:"5%" },
+			{ label: "COVID", color: "#6bcdf3", pct:"5%" }
+		];	
+		
+		const legend = svg.append("g")
+			.attr("transform", `translate(${width - 100}, ${height - (legendData.length * 29 + 10)})`)
+			.attr("class", "legend");
+
+		legend.append("rect")
+			.attr("x", -margin.left -20)
+			.attr("y", -10)
+			.attr("width", 260)
+			.attr("height", legendData.length * 29 + 5)
+			.style("fill", "none")
+			.style("stroke", "#042d7f");
+		
+		legend.selectAll(".legend-item")
+			.data(legendData)
+			.enter()
+			.append("g")
+			.attr("class", "legend-item")
+			.attr("transform", (d, i) => `translate(0, ${i * 28})`)
+			.each(function(d) {
+				xoffset = ((d.label === "Train") || (d.label === "Test")) ?
+					margin.left : margin.left - 20;
+
+				d3.select(this).append("rect")
+					.attr("x", -10 - xoffset)
+					.attr("y", 0)
+					.attr("width", 20)
+					.attr("height", 20)
+					.style("fill", d.color);
+		
+				d3.select(this).append("text")
+					.attr("x", 16 - xoffset)
+					.attr("y", 16)
+					.attr("dy", "0.2em")
+					.text(d.label)
+					.style("font-size", tickSize)
+					.style("fill", "#042d7f");
+					
+				d3.select(this).append("text")
+					.attr("x", 135)
+					.attr("y", 16)
+					.attr("dy", "0.2em")
+					.attr("text-anchor", "end")
+					.text(d.pct)
+					.style("font-size", tickSize)
+					.style("fill", "#042d7f");
+			});
+	}
+
 }
 
 const thumbnail1 = tnContainer.append("svg")
@@ -500,11 +580,7 @@ d3.selectAll(".thumbnail")
 			} else if (chartType === "drawTwoLevelPieChart"){
 				drawTwoLevelPieChart(confusion, pieData, 800, 624, "large");
 			}
-			// thumbnail.selectAll("*").each(function() {
-// 				const element = this.cloneNode(true);
-// 				d3.select(element).classed("dynamic-element", true);
-// 				confusion.node().appendChild(element);
-// 			});
+
 		}
     });
     
