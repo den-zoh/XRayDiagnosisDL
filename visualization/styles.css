@@ -101,16 +101,6 @@ h3 {
     box-sizing: border-box;
 }
 
-/* 
-#xray-chooser-list {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    background-color: var(--tory-blue);
-
-}
- */
-
 #xray-chooser-button-container {
     display: flex;
     justify-content: right;

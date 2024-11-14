@@ -307,11 +307,122 @@ function drawEpochLineChart(svg, data, width, height, fontSize) {
         
 }
 
+function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
+    const margin = { 
+    	top: height * 0.1, 
+    	right: width * 0.025, 
+    	bottom: height * 0.225, 
+    	left: width * 0.125
+    };
+    const tickSize = fontSize === "small" ? "10pt" : "20pt";
+    const labelsSize = fontSize === "small" ? "14pt" : "30pt";
+    const titleSize = fontSize === "small" ? "16pt" : "36pt";
+    const yoffset = fontSize === "small" ? 3* margin.bottom/4 :  margin.bottom/2 - 7;
+    const radius = Math.min(width, height) / 2;
+	const outerColors = ["#0762ad", "#0492c9",]; 
+	const innerColors = ["#0492c9", "#41b4e0", "#6bcdf3", "#0762ad", "#438fce", "#8ac5f7",]; 
+	
+	const outerColorScale = d3.scaleOrdinal()
+		.domain(["Test", "Train"]) 
+		.range(outerColors); 
+	
+	const innerColorScale = d3.scaleOrdinal()
+		.domain(["COVID", "Pneumonia", "Normal",])
+		.range(innerColors);
+
+    const outerArc = d3.arc()
+        .innerRadius(radius * 0.7)
+        .outerRadius(radius);
+
+    const innerArc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius * 0.67);
+
+    const pie = d3.pie()
+        .value(d => d.value)
+        .sort(null);
+
+    const chartGroup = svg.append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    // Draw outer pie
+    chartGroup.selectAll(".outer-slice")
+        .data(pie(data.outer))
+        .enter()
+        .append("path")
+        .attr("class", "outer-slice")
+        .attr("d", outerArc)
+        .attr("fill", (d, i) => outerColorScale(i))
+        .style("stroke", "#fff")
+        .style("stroke-width", "2px");
+
+    // Draw inner pie
+    chartGroup.selectAll(".inner-slice")
+        .data(pie(data.inner))
+        .enter()
+        .append("path")
+        .attr("class", "inner-slice")
+        .attr("d", innerArc)
+        .attr("fill", (d, i) => innerColorScale(i))
+        .style("stroke", "#fff")
+        .style("stroke-width", "2px");
+
+    // Add labels to outer pie
+    chartGroup.selectAll(".outer-label")
+        .data(pie(data.outer))
+        .enter()
+        .append("text")
+        .attr("transform", d => `translate(${outerArc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#bef4fd")
+        .style("font-size", tickSize)
+        .text(d => d.data.label);
+        
+    chartGroup.selectAll(".inner-label")
+		.data(pie(data.inner))
+		.enter()
+		.append("text")
+		.attr("transform", d => {
+			const angle = (d.startAngle + d.endAngle) / 2;
+			const [x, y] = innerArc.centroid(d); 
+			const scaleX = angle > Math.PI ? -1 : 1;
+			const scaleY = angle > Math.PI ? -1 : 1;
+      	  	return `translate(${x * 1.85}, ${y * 1.85}) rotate(${(angle * 180) / Math.PI - 90}) scale(${scaleX}, ${scaleY})`;
+		})
+		.attr("text-anchor", d => {
+			const angle = (d.startAngle + d.endAngle) / 2;
+			return angle > Math.PI ? "start" : "end";
+		})
+		.attr("dy", "0.35em") 
+		.style("font-size", tickSize)
+		.attr("fill", "#bef4fd")
+		.text(d => d.data.label);
+}
+
 const thumbnail1 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
-    .style("background-color", "#ccc");
-    
+    .attr("data-function", "drawTwoLevelPieChart")
+    .style("background-color", "#bef4fd");  
+
+const pieData = {
+    outer: [
+        { label: "Train", value: 80 },
+        { label: "Test", value: 20 },
+    ],
+    inner: [
+        { label: "Normal", value: 50 },
+        { label: "Pneumonia", value: 15 },
+        { label: "COVID", value: 15 },
+        { label: "Normal", value: 10 },
+        { label: "Pneumonia", value: 5 },
+        { label: "COVID", value: 5 },
+    ],
+};
+   
+drawTwoLevelPieChart(thumbnail1, pieData, 400, 200, "small");
+
+ 
 const thumbnail2 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
@@ -353,8 +464,6 @@ const thumbnail4 = tnContainer.append("svg")
 
 d3.selectAll(".thumbnail")
     .on("click", function() {
-    	// confusion.selectAll(".dynamic-image").remove();
-//         confusion.selectAll(".dynamic-element").remove();
 		confusion.selectAll("*").remove();
     	d3.selectAll(".thumbnail").classed("thumbnail-border", false);
         d3.select(this).classed("thumbnail-border", true);
@@ -388,6 +497,8 @@ d3.selectAll(".thumbnail")
 			const chartType = thumbnail.attr("data-function");
 			if (chartType === "drawEpochLineChart") {
 				drawEpochLineChart(confusion, data, 800, 700, "large");
+			} else if (chartType === "drawTwoLevelPieChart"){
+				drawTwoLevelPieChart(confusion, pieData, 800, 624, "large");
 			}
 			// thumbnail.selectAll("*").each(function() {
 // 				const element = this.cloneNode(true);
