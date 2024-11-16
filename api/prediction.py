@@ -4,12 +4,12 @@ import logging
 from PIL import Image, ImageEnhance
 from flask import Flask, jsonify, request
 
-from api.CNN import SimpleCNN
+from api.CNN import AdvancedCNN
 from model.model_utils import run_inference_on_image, get_class_names
 
 app = Flask(__name__)
 
-model = SimpleCNN()
+model = AdvancedCNN()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
