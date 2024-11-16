@@ -1,7 +1,6 @@
 import json
 import torch
 import logging
-from imgaug import augmenters as imgaug
 from PIL import Image, ImageEnhance
 from flask import Flask, jsonify, request
 
@@ -34,7 +33,7 @@ def predict():
     aug1_predicted_label, aug1_probabilities = run_inference_on_image(model, img1)
 
     # AUGMENTATION 2
-    img2 = image.rotate(180)
+    img2 = image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     aug2_predicted_label, aug2_probabilities = run_inference_on_image(model, img2)
 
     # AUGMENTATION 3
@@ -44,7 +43,6 @@ def predict():
     # AUGMENTATION 4
     img4 = ImageEnhance.Contrast(image).enhance(1.1)
     aug4_predicted_label, aug4_probabilities = run_inference_on_image(model, img4)
-    # imaugs.Contrast(factor=1.1),
 
     # AUGMENTATION 5
     img5 = ImageEnhance.Sharpness(image).enhance(0)
