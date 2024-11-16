@@ -1,6 +1,3 @@
-// Example D3.js script setup
-
-// Select the middle column and append an SVG element as a placeholder
 const leftColumn = d3.select("#left-column");
 const leftColumnWidth = document.querySelector(".left").offsetWidth;
 const leftColumnHeight = document.querySelector(".left").offsetHeight;
@@ -27,8 +24,6 @@ const width = containerWidth * widthPercentage;
 const height = containerHeight * heightPercentage;
 const radius = height * radiusPercentage;
 const margin = (containerWidth - 3 * width) / 2
-
-
 
 
 
@@ -119,7 +114,6 @@ const fileList = [
     { name: "Sample 6", thumbnail: "images/thumbnail6.png" },
     { name: "Sample 7", thumbnail: "images/thumbnail7.png" },
 ];
-//  		.style("background-color", "#bef4fd99")
 
 const chooserList = document.querySelector("#xray-chooser-list");
 chooserList.style.display = "grid";
@@ -152,8 +146,6 @@ fileList.forEach(file => {
 
     chooserList.appendChild(fileItem);
 });
-
-
 
 const xraychooser = leftColumn.select("#xray-chooser-button-container")
     .append("svg")
@@ -207,8 +199,171 @@ xraychooser.append("text")
     .style("font-family", "Arial, sans-serif")
     .style("font-size", "16px")
     .style("font-weight", "bold"); 
+
+xrayID = 552
+xrayActual = "COVID19"
+
+// Middle Column
+function DrawAugments(svg, xrayID) {
+    const thumbnails = [
+        { id: "#xraythumb3", label: "Brightness x 1.2", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbr.jpg` },
+        { id: "#xraythumb4", label: "Contrast x 1.1", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augct.jpg` },
+        { id: "#xraythumb5", label: "Blur 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
+        { id: "#xraythumb6", label: "Sharpen 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
+    ];
     
+    const thumbnailContainer = svg.append("div")
+			.classed("xray-thumbnail-container", true);
+	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
+	thumbnailContainer.append("img")
+		.attr("src", img1) 
+		.attr("width", 160)
+		.attr("height", 120)
+		.attr("id", "xraythumb1")
+		.classed("xray-thumbnail", true)
+		.style("transform", "scaleX(-1)")
+		.style("transform-origin", "center");
     
+    thumbnailContainer.append("p")
+		.text("Horizontal Flip")
+		.style("text-align", "center")
+		.style("font-size", "10pt")
+		.style("color", "#042d7f")
+		.style("font-weight", "bold")
+		.style("background-color", "#bef4fd99")
+		.attr("transform", "scale(-1, 1) translate(-160, 0)");
+    
+    const thumbnailContainer2 = svg.append("div")
+			.classed("xray-thumbnail-container", true);
+	thumbnailContainer2.append("img")
+		.attr("src", img1) 
+		.attr("width", 160)
+		.attr("height", 120)
+		.attr("id", "xraythumb2")
+		.classed("xray-thumbnail", true)
+		.style("transform", "rotate(5deg)")
+        .style("transform-origin", "center");
+    
+    thumbnailContainer2.append("p")
+		.text("Rotated 5° CW")
+		.style("text-align", "center")
+		.style("font-size", "10pt")
+		.style("color", "#042d7f")
+		.style("font-weight", "bold")
+		.style("background-color", "#bef4fd99");
+		
+	thumbnails.forEach(({ id, label, img }) => {
+		const thumbnailContainer = svg.append("div")
+			.classed("xray-thumbnail-container", true);
+		
+		
+		thumbnailContainer.append("img")
+			.attr("src", img) 
+			.attr("width", 160)
+			.attr("height", 120)
+			.attr("id", id)
+			.classed("xray-thumbnail", true); 
+	
+		thumbnailContainer.append("p")
+			.text(label)
+			.style("text-align", "center")
+			.style("font-size", "10pt")
+			.style("color", "#042d7f")
+			.style("font-weight", "bold")
+			.style("background-color", "#bef4fd99");
+	});
+}
+
+function DrawMiddleButtons(){
+	const mwidth = rescontainer.node().clientWidth * widthPercentage + 2;
+	const mmargin = 0
+	
+	const resbuttons = middleColumn.append("div")
+		.attr("id", "results-button-container")
+		.style("margin-top", "15px")
+		.append("svg")
+		.attr("height", middleColumnHeight * heightPercentage)
+		
+	resbuttons.append("path")
+		.attr("d", `
+			M ${mmargin + 2 * mwidth}, 5 
+			h ${mwidth - radius} 
+			a ${radius},${radius} 0 0 1 ${radius},${radius} 
+			a ${radius},${radius} 0 0 1 -${radius},${radius} 
+			h -${mwidth - radius}
+			z
+		`)
+		.style("fill", "#3edffd")
+		.style("stroke", "#16afeb")
+		.style("stroke-mwidth", 3);
+	
+	resbuttons.append("text")
+		.attr("x", 2 * (mmargin + mwidth) + mwidth / 2 + mmargin / 2)
+		.attr("y", 5 + height / 4)
+		.attr("dy", "0.35em")
+		.attr("text-anchor", "middle")
+		.text("Similar")
+		.style("fill", "#064f8d")
+		.style("font-family", "Arial, sans-serif")
+		.style("font-size", "16px")
+		.style("font-weight", "bold");
+	
+	resbuttons.append("rect")
+		.attr("x", mmargin + mwidth)
+		.attr("y", 5)
+		.attr("width", mwidth)
+		.attr("height", height/2)
+		.style("fill", "#3edffd")
+		.style("stroke", "#16afeb")
+		.style("stroke-mwidth", 3);
+	
+	resbuttons.append("text")
+		.attr("x", (mmargin + mwidth) + mwidth / 2)
+		.attr("y", 5 + height / 4)
+		.attr("dy", "0.35em")
+		.attr("text-anchor", "middle")
+		.text("Results")
+		.style("fill", "#064f8d")
+		.style("font-family", "Arial, sans-serif")
+		.style("font-size", "16px")
+		.style("font-weight", "bold");
+	
+	resbuttons.append("path")
+		.attr("d", `
+			M ${mmargin + mwidth}, 5
+			h -${mwidth - radius} 
+			a ${radius},${radius} 0 0 0 -${radius},${radius} 
+			a ${radius},${radius} 0 0 0 ${radius},${radius} 
+			h ${mwidth - radius}
+			z
+		`)
+		.style("fill", "#3edffd")
+		.style("stroke", "#16afeb")
+		.style("stroke-mwidth", 3);
+	
+	resbuttons.append("text")
+		.attr("x", mmargin + mwidth / 2)
+		.attr("y", 5 + height / 4)
+		.attr("dy", "0.35em")
+		.attr("text-anchor", "middle")
+		.text("Augments")
+		.style("fill", "#064f8d")
+		.style("font-family", "Arial, sans-serif")
+		.style("font-size", "16px")
+		.style("font-weight", "bold");
+}
+
+
+const rescontainer = middleColumn.append("div")
+		.attr("id", "results-container")
+		.classed("results-container", true)
+		.style("margin-top", "25px");
+
+DrawAugments(rescontainer, xrayID)
+DrawMiddleButtons()
+
+
+// Right Column    
 const confusion = d3.select("#confusion")
     .attr("viewBox", "0 0 785 624")
     .attr("preserveAspectRatio", "xMidYMid meet")
@@ -417,17 +572,17 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
 			});
 		});
 		
-	if (fontSize != "small"){	
+	if (fontSize != "small"){			
 		const legendData = [
-			{ label: "Train", color: "#0762ad", pct:"80%"},
-			{ label: "Normal", color: "#0762ad", pct:"50%" },
-			{ label: "Pneumonia", color: "#438fce", pct:"15%" },
-			{ label: "COVID", color: "#8ac5f7", pct:"15%" },
-			{ label: "Test", color: "#0492c9", pct:"20%" },
-			{ label: "Normal", color: "#0492c9", pct:"10%" },
-			{ label: "Pneumonia", color: "#41b4e0", pct:"5%" },
-			{ label: "COVID", color: "#6bcdf3", pct:"5%" }
-		];	
+			{ label: "Train", color: "#0762AD", pct:"80%"},
+			{ label: "Pneumonia", color: "#0762AD", pct:"53%" },
+			{ label: "Normal", color: "#438FCE", pct:"20%" },
+			{ label: "COVID", color: "#8AC5F7", pct:"7%" },
+			{ label: "Test", color: "#0492C9", pct:"20%" },
+			{ label: "Pneumonia", color: "#0492C9", pct:"13%" },
+			{ label: "Normal", color: "#41B4E0", pct:"5%" },
+			{ label: "COVID", color: "#6BCDF3", pct:"2%" }
+		];
 		
 		const legend = svg.append("g")
 			.attr("transform", `translate(${width - 100}, ${height - (legendData.length * 29 + 10)})`)
@@ -487,16 +642,16 @@ const thumbnail1 = tnContainer.append("svg")
 
 const pieData = {
     outer: [
-        { label: "Train", value: 80 },
-        { label: "Test", value: 20 },
+        { label: "Train", value: 5144 },
+        { label: "Test", value: 1288 },
     ],
     inner: [
-        { label: "Normal", value: 50 },
-        { label: "Pneumonia", value: 15 },
-        { label: "COVID", value: 15 },
-        { label: "Normal", value: 10 },
-        { label: "Pneumonia", value: 5 },
-        { label: "COVID", value: 5 },
+        { label: "Pneumonia", value: 3418 },
+        { label: "Normal", value: 1266 },
+        { label: "COVID", value: 460 },
+        { label: "Pneumonia", value: 855 },
+        { label: "Normal", value: 317 },
+        { label: "COVID", value: 116 },
     ],
 };
    
