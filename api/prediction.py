@@ -1,6 +1,5 @@
 import json
 import torch
-import logging
 from PIL import Image, ImageEnhance
 from flask import Flask, jsonify, request
 
@@ -21,34 +20,33 @@ def load_model(model_path):
 def predict():
     load_model("api/cnn.pth")
 
-    # 1 = COVID, 2 = PNEUMONIA, 3 = NORMAL
     image_id = request.get_json().get("id")
     image = f"api/images/({image_id}).jpg"
     image = Image.open(image).convert("L")
 
     original_predicted_label, original_probabilities = run_inference_on_image(model, image)
 
-    # AUGMENTATION 1
+    # AUGMENTATION 1 - rotate image 5 degrees
     img1 = image.rotate(5)
     aug1_predicted_label, aug1_probabilities = run_inference_on_image(model, img1)
 
-    # AUGMENTATION 2
+    # AUGMENTATION 2 - horizontal flip
     img2 = image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     aug2_predicted_label, aug2_probabilities = run_inference_on_image(model, img2)
 
-    # AUGMENTATION 3
+    # AUGMENTATION 3 - enhance brightness
     img3 = ImageEnhance.Brightness(image).enhance(1.2)
     aug3_predicted_label, aug3_probabilities = run_inference_on_image(model, img3)
 
-    # AUGMENTATION 4
+    # AUGMENTATION 4 - enhance contrast
     img4 = ImageEnhance.Contrast(image).enhance(1.1)
     aug4_predicted_label, aug4_probabilities = run_inference_on_image(model, img4)
 
-    # AUGMENTATION 5
+    # AUGMENTATION 5 - blur
     img5 = ImageEnhance.Sharpness(image).enhance(0)
     aug5_predicted_label, aug5_probabilities = run_inference_on_image(model, img5)
 
-    # AUGMENTATION 6
+    # AUGMENTATION 6 - sharpen
     img6 = ImageEnhance.Sharpness(image).enhance(2)
     aug6_predicted_label, aug6_probabilities = run_inference_on_image(model, img6)
 
