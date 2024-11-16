@@ -1,6 +1,7 @@
 from typing import List
 import enum
 import numpy as np
+import cv2
 import torch
 import torch.nn.functional as F
 
@@ -29,8 +30,29 @@ def get_class_names() -> List[str]:
 def model_transformations() -> Compose:
     """Transformations for our Pytorch model"""
 
+    def apply_clahe(image):
+        """
+        CLAHE applies the technique locally in small regions of the image, preventing noise 
+        amplification in homogenous areas.
+        Beneficial in highlighting specific regios of interest without introducing excessive noise.
+        """
+        img = np.array(image)
+        if len(img.shape) == 3:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        return clahe.apply(img)
+    
+    def apply_noise_reduction(img):
+        """applies Non-Local Means Denoising."""
+        img = np.array(img)
+        denoised_img = cv2.fastNlMeansDenoising(img, h=10, templateWindowSize=7, searchWindowSize=21)
+        return Image.fromarray(denoised_img)
+
+
     transform = transforms.Compose(
         [
+            transforms.Lambda(apply_clahe),
+            transforms.Lambda(apply_noise_reduction),
             transforms.Resize((400, 300)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5], std=[0.5]),
