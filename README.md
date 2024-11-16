@@ -16,7 +16,7 @@ It is more important than ever to equip medical practitioners with tools to quic
 
 3. From the `XRayDiagnosisDL` directory, start the API
 
-        python -m api/prediction
+        python -m api.prediction
 
 ### Running the visualization
 TODO
