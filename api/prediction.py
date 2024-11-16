@@ -24,7 +24,7 @@ def predict():
 
     # 1 = COVID, 2 = PNEUMONIA, 3 = NORMAL
     image_id = request.get_json().get("id")
-    image = f"api/images/{image_id}.jpg"
+    image = f"api/images/({image_id}).jpg"
     image = Image.open(image).convert("L")
 
     original_predicted_label, original_probabilities = run_inference_on_image(model, image)
@@ -56,7 +56,15 @@ def predict():
 
 
     # find the most common prediction among original and augmentation
-    labels = [original_predicted_label, aug1_predicted_label, aug2_predicted_label]
+    labels = [
+        original_predicted_label, 
+        aug1_predicted_label, 
+        aug2_predicted_label, 
+        aug3_predicted_label, 
+        aug4_predicted_label, 
+        aug5_predicted_label, 
+        aug6_predicted_label
+    ]
     predicted_label = max(set(labels), key=labels.count)
 
     return jsonify({
