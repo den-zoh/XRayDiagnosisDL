@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     counts = []
 
-    # Grab the ids of all three test classes' photos
+    # Grab the ids of all three test classes' photos: COVID [460-575], NORMAL [1266 - 1582], PNEUMONIA [3418-4272]
     photo_ids = list(range(1266, 1582, 1)) + list(range(460, 575, 1)) + list(range(3418, 4272, 1))
     for id in photo_ids:
         x = requests.post("http://127.0.0.1:5000/predict", json={"id": id})
