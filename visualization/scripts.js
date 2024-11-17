@@ -41,7 +41,7 @@ xraybuttons.append("path")
         h -${width - radius}
         z
     `)
-    .style("fill", "#3edffd")
+    .style("fill", "#0e8cd2")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
 
@@ -61,7 +61,7 @@ xraybuttons.append("rect")
     .attr("y", 5)
     .attr("width", width)
     .attr("height", height/2)
-    .style("fill", "#3edffd")
+    .style("fill", "#0e8cd2")
     .style("stroke", "#16afeb")
     .style("stroke-width", 3);
 
@@ -112,13 +112,13 @@ const rangeData = [
 ];
 
 const samples = [
-    1266, 1451, 520, 552, 1308, 561, 4062, 
+    552, 1266, 1451, 520, 1308, 561, 4062, 
     3497, 3904, 3451, 490, 1462
 ];
 
 let fileList = [];
 let actLabel = ""
-
+const defaultIndex = 0
 for (const sample of samples) {
     for (const range of rangeData) {
         if (sample >= range.low && sample <= range.high) {
@@ -135,13 +135,15 @@ chooserList.style.display = "grid";
 chooserList.style.gridTemplateColumns = "repeat(3, 1fr)";
 chooserList.style.gap = "10px";
 
-fileList.forEach(file => {
+fileList.forEach((file,index) => {
     const fileItem = document.createElement("div");
     fileItem.style.display = "flex";
     fileItem.style.flexDirection = "column";
     fileItem.style.alignItems = "center";
     fileItem.style.backgroundColor = "#bef4fd";
-    fileItem.style.border = "1px solid #042d7f";
+    if (index == defaultIndex) 
+    	{fileItem.style.border = "3px solid #3edffd";}
+    else {fileItem.style.border = "1px solid #042d7f";}
     fileItem.style.padding = "10px";
     fileItem.style.borderRadius = "4px";
     fileItem.style.cursor = "pointer"; 
@@ -169,15 +171,13 @@ fileList.forEach(file => {
             tile.style.border = "1px solid #042d7f"; 
         });
 
-        // Highlight the clicked tile
         fileItem.style.border = "3px solid #3edffd";
-        
         const resultsContainer = middleColumn.select("#results-container");
 		resultsContainer.html("");
-
-//         const resultsContainer = middleColumn.node().querySelector('#results-container');
         DrawAugments(resultsContainer, xrayID=samples[clickedIndex]);
         
+        const xrayImage = document.getElementById("xray-image");
+		xrayImage.src = fileList[clickedIndex].thumbnail;
     };
 
     chooserList.appendChild(fileItem);
@@ -249,8 +249,8 @@ function DrawAugments(resultsCont, xrayID) {
     const thumbnails = [
         { id: "#xraythumb3", label: "Brightness x 1.2", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbr.jpg` },
         { id: "#xraythumb4", label: "Contrast x 1.1", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augct.jpg` },
-        { id: "#xraythumb5", label: "Blur 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
-        { id: "#xraythumb6", label: "Sharpen 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
+        { id: "#xraythumb5", label: "Blur x 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
+        { id: "#xraythumb6", label: "Sharpen x 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
     ];
 
     let thumbnailContainer = resultsCont.append("div")
@@ -259,7 +259,6 @@ function DrawAugments(resultsCont, xrayID) {
 	console.log(thumbnailContainer)
 
 	thumbnailContainer.selectAll("img").remove();
-	thumbnailContainer.select("#xraythumb1").remove();
     
 	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
 	
@@ -323,12 +322,12 @@ function DrawAugments(resultsCont, xrayID) {
 }
 
 function DrawMiddleButtons(){
-	const mwidth = rescontainer.node().clientWidth * widthPercentage + 2;
+	const mwidth = rescontainer.node().clientWidth * widthPercentage - 5;
 	const mmargin = 0
 	
 	const resbuttons = middleColumn.append("div")
 		.attr("id", "results-button-container")
-		.style("margin-top", "15px")
+		.style("margin-top", "3px")
 		.append("svg")
 		.attr("height", middleColumnHeight * heightPercentage)
 		
@@ -341,7 +340,7 @@ function DrawMiddleButtons(){
 			h -${mwidth - radius}
 			z
 		`)
-		.style("fill", "#3edffd")
+		.style("fill", "#0e8cd2")
 		.style("stroke", "#16afeb")
 		.style("stroke-mwidth", 3);
 	
@@ -356,7 +355,7 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
-	resbuttons.append("rect")
+	const resultsButton = resbuttons.append("rect")
 		.attr("x", mmargin + mwidth)
 		.attr("y", 5)
 		.attr("width", mwidth)
@@ -375,6 +374,11 @@ function DrawMiddleButtons(){
 		.style("font-family", "Arial, sans-serif")
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
+		
+    resultsButton.on("click", () => {
+        console.log("Results button clicked");
+		toggleResults()
+    });
 	
 	resbuttons.append("path")
 		.attr("d", `
