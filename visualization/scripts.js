@@ -105,15 +105,30 @@ const chooser = d3.select("#xray-chooser-container")
     .attr("width", "100%")
     .attr("height", "20%");
 
-const fileList = [
-    { name: "Sample 1", thumbnail: "images/thumbnail1.png" },
-    { name: "Sample 2", thumbnail: "images/thumbnail2.png" },
-    { name: "Sample 3", thumbnail: "images/thumbnail3.png" },
-    { name: "Sample 4", thumbnail: "images/thumbnail4.png" },
-    { name: "Sample 5", thumbnail: "images/thumbnail5.png" },
-    { name: "Sample 6", thumbnail: "images/thumbnail6.png" },
-    { name: "Sample 7", thumbnail: "images/thumbnail7.png" },
+const rangeData = [
+			{ label: "PNEUMONIA", low: 3418, high:4272 },
+			{ label: "NORMAL", low: 1266, high:1582 },
+			{ label: "COVID19", low: 460, high:575 }
 ];
+
+const samples = [
+    1266, 1451, 520, 552, 1308, 561, 4062, 
+    3497, 3904, 3451, 490, 1462
+];
+
+let fileList = [];
+let actLabel = ""
+
+for (const sample of samples) {
+    for (const range of rangeData) {
+        if (sample >= range.low && sample <= range.high) {
+            actLabel = range.label;
+            break;
+        }
+    }
+    temp = { sampleID: `${sample}`, actlabel: `${actLabel}`, name: `Sample ${sample}`, thumbnail: `images/Data_400x300/test/${actLabel}/${actLabel}(${sample})_400x300.jpg` },
+    fileList.push(temp)
+}
 
 const chooserList = document.querySelector("#xray-chooser-list");
 chooserList.style.display = "grid";
@@ -122,13 +137,14 @@ chooserList.style.gap = "10px";
 
 fileList.forEach(file => {
     const fileItem = document.createElement("div");
-	fileItem.style.display = "flex";
-	fileItem.style.flexDirection = "column";
-	fileItem.style.alignItems = "center";
-	fileItem.style.backgroundColor = "#bef4fd";
-	fileItem.style.border = "1px solid #042d7f";
-	fileItem.style.padding = "10px";
-	fileItem.style.borderRadius = "4px";
+    fileItem.style.display = "flex";
+    fileItem.style.flexDirection = "column";
+    fileItem.style.alignItems = "center";
+    fileItem.style.backgroundColor = "#bef4fd";
+    fileItem.style.border = "1px solid #042d7f";
+    fileItem.style.padding = "10px";
+    fileItem.style.borderRadius = "4px";
+    fileItem.style.cursor = "pointer"; 
 
     const fileImage = document.createElement("img");
     fileImage.src = file.thumbnail;
@@ -144,8 +160,29 @@ fileList.forEach(file => {
     fileItem.appendChild(fileImage);
     fileItem.appendChild(fileName);
 
+    // onclick event
+    fileItem.onclick = () => {
+        const clickedIndex = Array.from(chooserList.children).indexOf(fileItem);
+
+        const tiles = document.querySelectorAll("#xray-chooser-list > div");
+        tiles.forEach(tile => {
+            tile.style.border = "1px solid #042d7f"; 
+        });
+
+        // Highlight the clicked tile
+        fileItem.style.border = "3px solid #3edffd";
+        
+        const resultsContainer = middleColumn.select("#results-container");
+		resultsContainer.html("");
+
+//         const resultsContainer = middleColumn.node().querySelector('#results-container');
+        DrawAugments(resultsContainer, xrayID=samples[clickedIndex]);
+        
+    };
+
     chooserList.appendChild(fileItem);
 });
+
 
 const xraychooser = leftColumn.select("#xray-chooser-button-container")
     .append("svg")
@@ -200,21 +237,32 @@ xraychooser.append("text")
     .style("font-size", "16px")
     .style("font-weight", "bold"); 
 
-xrayID = 552
-xrayActual = "COVID19"
-
 // Middle Column
-function DrawAugments(svg, xrayID) {
+function DrawAugments(resultsCont, xrayID) {
+	for (const range of rangeData) {
+        if (xrayID >= range.low && xrayID <= range.high) {
+            xrayActual = range.label;
+            break;
+        }
+    }
+    
     const thumbnails = [
         { id: "#xraythumb3", label: "Brightness x 1.2", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbr.jpg` },
         { id: "#xraythumb4", label: "Contrast x 1.1", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augct.jpg` },
         { id: "#xraythumb5", label: "Blur 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
         { id: "#xraythumb6", label: "Sharpen 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
     ];
-    
-    const thumbnailContainer = svg.append("div")
+
+    let thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
+	
+	console.log(thumbnailContainer)
+
+	thumbnailContainer.selectAll("img").remove();
+	thumbnailContainer.select("#xraythumb1").remove();
+    
 	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
+	
 	thumbnailContainer.append("img")
 		.attr("src", img1) 
 		.attr("width", 160)
@@ -233,7 +281,7 @@ function DrawAugments(svg, xrayID) {
 		.style("background-color", "#bef4fd99")
 		.attr("transform", "scale(-1, 1) translate(-160, 0)");
     
-    const thumbnailContainer2 = svg.append("div")
+    let thumbnailContainer2 = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 	thumbnailContainer2.append("img")
 		.attr("src", img1) 
@@ -253,7 +301,7 @@ function DrawAugments(svg, xrayID) {
 		.style("background-color", "#bef4fd99");
 		
 	thumbnails.forEach(({ id, label, img }) => {
-		const thumbnailContainer = svg.append("div")
+		const thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 		
 		
@@ -359,7 +407,7 @@ const rescontainer = middleColumn.append("div")
 		.classed("results-container", true)
 		.style("margin-top", "25px");
 
-DrawAugments(rescontainer, xrayID)
+DrawAugments(rescontainer, 552)
 DrawMiddleButtons()
 
 
@@ -740,5 +788,4 @@ d3.selectAll(".thumbnail")
     });
     
     
-// Placeholder for additional D3.js code
 console.log("D3.js script loaded and ready for development");
