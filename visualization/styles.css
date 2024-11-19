@@ -61,7 +61,7 @@ h3 {
 
 .middle {
     flex: 0.7;
-	background-color: #042d7f99; 	
+	background-color: #042d7fcc; 	
 }
 
 #xray-image {
@@ -111,6 +111,18 @@ h3 {
     align-items: flex-start; 
     gap: 5px;
 }
+
+.overall-prediction {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--electric-cyan);
+    padding: 10px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 
 .xray-thumbnail-container {
     width: calc(50% - 5px);

@@ -293,7 +293,7 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actual
 
 
 function DrawAugments(resultsCont, xrayID) {
-	let bmargin = "45px";
+	let bmargin = "33px";
 	
 	for (const range of rangeData) {
         if (xrayID >= range.low && xrayID <= range.high) {
@@ -308,6 +308,27 @@ function DrawAugments(resultsCont, xrayID) {
         { id: "#xraythumb5", label: "Blur x 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
         { id: "#xraythumb6", label: "Sharpen x 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
     ];
+    
+	const predictionDiv = resultsCont.select(".overall-prediction");
+    
+    if (!predictionDiv.empty()) {predictionDiv.text("");} 
+    else {
+        resultsCont.append("div")
+            .attr("class", "overall-prediction")
+            .style("display", "none");
+    }
+    
+    const predictedLabel = predData[xrayID]?.predicted_label || "Unknown";
+    if (predictedLabel.toLowerCase() === xrayActual.toLowerCase()) {
+    	predictionColor = correctColorScale[3]
+    }
+    else {
+    	predictionColor = incorrectColorScale[3]
+    }
+    console.log(predictedLabel, predictionColor)
+    resultsCont.select(".overall-prediction")
+		.html(`Model Prediction: ${formatLabel(predictedLabel)}<br>Actual Label: ${formatLabel(xrayActual)}`)
+		.style("color", predictionColor);
 
     let thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
@@ -325,7 +346,7 @@ function DrawAugments(resultsCont, xrayID) {
 		.attr("xrayActual", xrayActual)
 		.attr("xrayID", xrayID)
 		.style("text-align", "center")
-		.style("font-size", "16pt")
+		.style("font-size", "14pt")
 		.style("color", resHFlip.color)
 		.style("font-weight", "bold")
 // 		.style("background-color", "#bef4fd66")
@@ -360,7 +381,7 @@ function DrawAugments(resultsCont, xrayID) {
 		.attr("xrayActual", xrayActual)
 		.attr("xrayID", xrayID)
 		.style("text-align", "center")
-		.style("font-size", "16pt")
+		.style("font-size", "14pt")
 		.style("color", res5deg.color)
 		.style("font-weight", "bold")
 		.style("display", "none");
@@ -418,7 +439,7 @@ function DrawAugments(resultsCont, xrayID) {
 			.attr("xrayActual", xrayActual)
 			.attr("xrayID", xrayID)
 			.style("text-align", "center")
-			.style("font-size", "16pt")
+			.style("font-size", "14pt")
 			.style("color", pcolor)
 			.style("font-weight", "bold")
 			.style("display", "none");
@@ -522,24 +543,23 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
-	resultsLabel.on("click", () => {
-		toggleResults();
-	});
-	resultsButton.on("click", () => {
-		toggleResults();
-	});
+	resultsLabel.on("click", () => {toggleResults();});
+	resultsButton.on("click", () => {toggleResults();});
+	
 	augButton.on("click", () => {	
 		const predictions = rescontainer.selectAll(".prediction");
+		const predictionDiv = rescontainer.select(".overall-prediction");
+		predictionDiv.style("display", "none");
 		predictions.each(function () {
 			const currentDisplay = d3.select(this).style("display");
 			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
 		});
 	});
 
-	augLabel.on("click", () => {
-		console.log("Aug Button clicked");
-	
+	augLabel.on("click", () => {	
 		const predictions = rescontainer.selectAll(".prediction");
+		const predictionDiv = rescontainer.select(".overall-prediction");
+		predictionDiv.style("display", "none");
 		predictions.each(function () {
 			const currentDisplay = d3.select(this).style("display");
 			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
@@ -559,16 +579,23 @@ DrawMiddleButtons()
 console.log(predData);
 function toggleResults() {
 //     console.log("toggleResults triggered");
-// 
-// 	console.log("Rescontainer:", rescontainer);
-// 
 // 	console.log("Rescontainer:", rescontainer);
 // 	console.log(document.querySelectorAll(".prediction"));
-
+    const predictionDiv = rescontainer.select(".overall-prediction");
 	const predictions = rescontainer.selectAll(".prediction");
+	const predDisplay = predictionDiv.style("display")
+	
 // 	console.log(`Number of predictions: ${predictions.size()}`);
 // 	console.log(predictions.nodes());
-
+// 	console.log(predictionDiv)
+// 	console.log(predDisplay)
+	
+	if (predDisplay === "none") {
+        predictionDiv.style("display", "block");
+    } else {
+        predictionDiv.style("display", "none");
+    }
+    
 	predictions.each(function (d, i) {
 		const currentDisplay = d3.select(this).style("display");
 		if (currentDisplay !== "none") {
