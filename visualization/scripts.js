@@ -238,7 +238,9 @@ xraychooser.append("text")
     .style("font-weight", "bold"); 
 
 // Middle Column
+
 function DrawAugments(resultsCont, xrayID) {
+	bmargin = "45px"
 	for (const range of rangeData) {
         if (xrayID >= range.low && xrayID <= range.high) {
             xrayActual = range.label;
@@ -256,12 +258,23 @@ function DrawAugments(resultsCont, xrayID) {
     let thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 	
-	console.log(thumbnailContainer)
-
 	thumbnailContainer.selectAll("img").remove();
     
 	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
-	
+
+	thumbnailContainer.append("p")
+		.text("Prediction")
+		.classed("prediction", true)
+		.attr("xrayActual", xrayActual)
+		.attr("xrayID", xrayID)
+		.style("text-align", "center")
+		.style("font-size", "18pt")
+		.style("color", "#042d7f")
+		.style("font-weight", "bold")
+		.style("background-color", "#bef4fd66")
+		.style("display", "none")
+		.attr("transform", "scale(-1, 1) translate(-160, 0)");
+
 	thumbnailContainer.append("img")
 		.attr("src", img1) 
 		.attr("width", 160)
@@ -278,10 +291,24 @@ function DrawAugments(resultsCont, xrayID) {
 		.style("color", "#042d7f")
 		.style("font-weight", "bold")
 		.style("background-color", "#bef4fd99")
+		.style("margin-bottom", bmargin)
 		.attr("transform", "scale(-1, 1) translate(-160, 0)");
     
     let thumbnailContainer2 = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
+	
+	thumbnailContainer2.append("p")
+		.text("Prediction")
+		.classed("prediction", true)
+		.attr("xrayActual", xrayActual)
+		.attr("xrayID", xrayID)
+		.style("text-align", "center")
+		.style("font-size", "18pt")
+		.style("color", "#042d7f")
+		.style("font-weight", "bold")
+		.style("background-color", "#bef4fd66")
+		.style("display", "none");
+		
 	thumbnailContainer2.append("img")
 		.attr("src", img1) 
 		.attr("width", 160)
@@ -292,18 +319,30 @@ function DrawAugments(resultsCont, xrayID) {
         .style("transform-origin", "center");
     
     thumbnailContainer2.append("p")
-		.text("Rotated 5° CW")
+		.html("Rotated 5 &deg; CW")
 		.style("text-align", "center")
 		.style("font-size", "10pt")
 		.style("color", "#042d7f")
 		.style("font-weight", "bold")
+		.style("margin-bottom", bmargin)
 		.style("background-color", "#bef4fd99");
 		
 	thumbnails.forEach(({ id, label, img }) => {
 		const thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 		
-		
+		thumbnailContainer.append("p")
+			.text("Prediction")
+			.classed("prediction", true)
+			.attr("xrayActual", xrayActual)
+			.attr("xrayID", xrayID)
+			.style("text-align", "center")
+			.style("font-size", "18pt")
+			.style("color", "#042d7f")
+			.style("font-weight", "bold")
+			.style("display", "none")
+			.style("background-color", "#bef4fd66");
+			
 		thumbnailContainer.append("img")
 			.attr("src", img) 
 			.attr("width", 160)
@@ -317,8 +356,11 @@ function DrawAugments(resultsCont, xrayID) {
 			.style("font-size", "10pt")
 			.style("color", "#042d7f")
 			.style("font-weight", "bold")
+			.style("margin-bottom", bmargin)
 			.style("background-color", "#bef4fd99");
 	});
+	
+
 }
 
 function DrawMiddleButtons(){
@@ -364,7 +406,7 @@ function DrawMiddleButtons(){
 		.style("stroke", "#16afeb")
 		.style("stroke-mwidth", 3);
 	
-	resbuttons.append("text")
+	const resultsLabel = resbuttons.append("text")
 		.attr("x", (mmargin + mwidth) + mwidth / 2)
 		.attr("y", 5 + height / 4)
 		.attr("dy", "0.35em")
@@ -374,13 +416,8 @@ function DrawMiddleButtons(){
 		.style("font-family", "Arial, sans-serif")
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
-		
-    resultsButton.on("click", () => {
-        console.log("Results button clicked");
-		toggleResults()
-    });
-	
-	resbuttons.append("path")
+
+	const augButton = resbuttons.append("path")
 		.attr("d", `
 			M ${mmargin + mwidth}, 5
 			h -${mwidth - radius} 
@@ -393,7 +430,7 @@ function DrawMiddleButtons(){
 		.style("stroke", "#16afeb")
 		.style("stroke-mwidth", 3);
 	
-	resbuttons.append("text")
+	const augLabel = resbuttons.append("text")
 		.attr("x", mmargin + mwidth / 2)
 		.attr("y", 5 + height / 4)
 		.attr("dy", "0.35em")
@@ -403,8 +440,40 @@ function DrawMiddleButtons(){
 		.style("font-family", "Arial, sans-serif")
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
-}
+	
+	resultsLabel.on("click", () => {
+		console.log("Results Label clicked");
+		toggleResults();
+	});
+	resultsButton.on("click", () => {
+		console.log("Results Button clicked");
+		toggleResults();
+	});
+	augButton.on("click", () => {
+		console.log("Aug Button clicked");
+	
+		const predictions = rescontainer.selectAll(".prediction");
+		predictions.each(function () {
+			const currentDisplay = d3.select(this).style("display");
+			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
+		});
+	
+		console.log("Toggled visibility of prediction labels.");
+	});
 
+	augLabel.on("click", () => {
+		console.log("Aug Button clicked");
+	
+		const predictions = rescontainer.selectAll(".prediction");
+		predictions.each(function () {
+			const currentDisplay = d3.select(this).style("display");
+			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
+		});
+	
+		console.log("Toggled visibility of prediction labels.");
+	});
+
+}
 
 const rescontainer = middleColumn.append("div")
 		.attr("id", "results-container")
@@ -413,6 +482,32 @@ const rescontainer = middleColumn.append("div")
 
 DrawAugments(rescontainer, 552)
 DrawMiddleButtons()
+
+console.log(predData);
+
+function toggleResults() {
+    console.log("toggleResults triggered");
+
+	console.log("Rescontainer:", rescontainer);
+
+	console.log("Rescontainer:", rescontainer);
+	console.log(document.querySelectorAll(".prediction"));
+
+	const predictions = rescontainer.selectAll(".prediction");
+	console.log(`Number of predictions: ${predictions.size()}`);
+	console.log(predictions.nodes());
+
+	predictions.each(function (d, i) {
+		const currentDisplay = d3.select(this).style("display");
+		if (currentDisplay !== "none") {
+			d3.select(this).style("display", "none");
+			return;
+		}
+		const actualLabel = d3.select(this).attr("xrayActual");
+		const XRayID = d3.select(this).attr("xrayID");
+		d3.select(this).style("display", "block");
+	});
+}
 
 
 // Right Column    
@@ -625,16 +720,27 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
 		});
 		
 	if (fontSize != "small"){			
+// 		const legendData = [
+// 			{ label: "Train", color: "#0762AD", pct:"80%"},
+// 			{ label: "Pneumonia", color: "#0762AD", pct:"53%" },
+// 			{ label: "Normal", color: "#438FCE", pct:"20%" },
+// 			{ label: "COVID", color: "#8AC5F7", pct:"7%" },
+// 			{ label: "Test", color: "#0492C9", pct:"20%" },
+// 			{ label: "Pneumonia", color: "#0492C9", pct:"13%" },
+// 			{ label: "Normal", color: "#41B4E0", pct:"5%" },
+// 			{ label: "COVID", color: "#6BCDF3", pct:"2%" }
+// 		];
 		const legendData = [
 			{ label: "Train", color: "#0762AD", pct:"80%"},
-			{ label: "Pneumonia", color: "#0762AD", pct:"53%" },
-			{ label: "Normal", color: "#438FCE", pct:"20%" },
-			{ label: "COVID", color: "#8AC5F7", pct:"7%" },
+			{ label: "Pneumonia", color: "#0762AD", pct:"66%" },
+			{ label: "Normal", color: "#438FCE", pct:"25%" },
+			{ label: "COVID", color: "#8AC5F7", pct:"9%" },
 			{ label: "Test", color: "#0492C9", pct:"20%" },
-			{ label: "Pneumonia", color: "#0492C9", pct:"13%" },
-			{ label: "Normal", color: "#41B4E0", pct:"5%" },
-			{ label: "COVID", color: "#6BCDF3", pct:"2%" }
+			{ label: "Pneumonia", color: "#0492C9", pct:"65%" },
+			{ label: "Normal", color: "#41B4E0", pct:"25%" },
+			{ label: "COVID", color: "#6BCDF3", pct:"10%" }
 		];
+		
 		
 		const legend = svg.append("g")
 			.attr("transform", `translate(${width - 100}, ${height - (legendData.length * 29 + 10)})`)
