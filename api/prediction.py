@@ -19,14 +19,17 @@ def load_model(model_path):
 @app.route("/predict", methods=['POST'])
 def predict():
     load_model("api/cnn.pth")
+
     if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 400
     data = request.get_json()
     if 'id' not in data:
         return jsonify({'error': 'Missing "id" in request'}), 400
+
     image_id = request.get_json().get("id")
     image = f"api/images/({image_id}).jpg"
     image = Image.open(image).convert("L")
+    
     original_predicted_label, original_probabilities = run_inference_on_image(model, image)
     
     # AUGMENTATION 1 - rotate image 5 degrees
