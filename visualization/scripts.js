@@ -293,7 +293,7 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actual
 
 
 function DrawAugments(resultsCont, xrayID) {
-	let bmargin = "33px";
+	let bmargin = "27px";
 	
 	for (const range of rangeData) {
         if (xrayID >= range.low && xrayID <= range.high) {
@@ -709,6 +709,254 @@ function drawEpochLineChart(svg, data, width, height, fontSize) {
         
 }
 
+function drawMultiEpochLineChart(svg, data, width, height, fontSize) {
+    const margin = { 
+    	top: height * 0.1, 
+    	right: width * 0.025, 
+    	bottom: height * 0.225, 
+    	left: width * 0.125
+    };
+    const tickSize = fontSize === "small" ? "10pt" : "20pt";
+    const labelsSize = fontSize === "small" ? "14pt" : "30pt";
+    const titleSize = fontSize === "small" ? "16pt" : "36pt";
+    const yoffset = fontSize === "small" ? 3* margin.bottom/4 :  margin.bottom/2 - 7;
+    const strokeWidth = fontSize === "small" ? 2 :  4;
+
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const chart = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xScale = d3.scaleLinear()
+        .domain([1, 10])
+        .range([0, chartWidth]);
+
+    const yScale = d3.scaleLinear()
+        .domain([d3.max(data, d => d3.max(d.values, v => v.loss)), d3.min(data, d => d3.min(d.values, v => v.loss))])
+        .range([0, chartHeight]);
+
+    const colorScale = d3.scaleOrdinal()
+        .domain(data.map(d => d.model))
+        .range(["#3edffd", "#064f8d", "#0e8cd2", "#042d7f"]);
+
+    const xAxis = d3.axisBottom(xScale).ticks(10);
+    const yAxis = d3.axisLeft(yScale).ticks(5, ".1");
+
+    chart.append("g")
+        .attr("transform", `translate(0, ${chartHeight})`)
+        .call(xAxis)
+        .selectAll("text")
+        .style("font-size", tickSize);
+
+    chart.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", tickSize);
+
+    chart.append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight + yoffset)
+        .attr("text-anchor", "middle")
+        .style("font-size", labelsSize)
+        .style("fill", "#042d7f")
+        .text("Epoch");
+
+    chart.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", -100)
+        .attr("text-anchor", "middle")
+        .style("font-size", labelsSize)
+        .style("fill", "#042d7f")
+        .text("Training Loss");
+
+	chart.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", titleSize)
+        .style("font-weight", "bold")
+        .style("fill", "#042d7f")
+        .text("Epoch vs Training Loss");
+        
+    data.forEach(model => {
+        const line = d3.line()
+            .x(d => xScale(d.epoch))
+            .y(d => yScale(d.loss));
+
+        chart.append("path")
+            .datum(model.values)
+            .attr("fill", "none")
+            .attr("stroke", colorScale(model.model))
+            .attr("stroke-width", strokeWidth)
+            .attr("d", line);
+    });
+    
+ 	const labelSizeNumber = parseInt(labelsSize, 10);
+    const legYOffset = fontSize === "small" ? 5 :  10;
+    const legXOffset = fontSize === "small" ? 0 :  50;
+    
+    const legend = svg.append("g")
+		.attr("transform", `translate(${width - margin.right - 120 - legXOffset}, ${margin.top + chartHeight/4})`);
+
+	console.log(labelSizeNumber)
+	data.forEach((d, i) => {
+		legend.append("circle")
+			.attr("cx", - legXOffset/5)
+			.attr("cy", i * (labelSizeNumber + legYOffset))
+			.attr("r", legYOffset)
+			.style("fill", colorScale(d.model));
+	
+		legend.append("text")
+			.attr("x", 5 )
+			.attr("y", i * (labelSizeNumber + legYOffset))
+			.attr("dy", "0.35em")
+			.style("font-size", labelsSize)
+			.text(d.model);
+	});
+}
+
+function drawGroupedBarChart(svg, data, width, height, fontSize) {
+    const margin = { 
+    	top: height * 0.1, 
+    	right: width * 0.025, 
+    	bottom: height * 0.225, 
+    	left: width * 0.125
+    };
+    const tickSize = fontSize === "small" ? "10pt" : "20pt";
+    const labelsSize = fontSize === "small" ? "14pt" : "30pt";
+    const titleSize = fontSize === "small" ? "16pt" : "36pt";
+    const yoffset = fontSize === "small" ? 3* margin.bottom/4 :  margin.bottom/2 - 7;
+    const strokeWidth = fontSize === "small" ? 2 :  4;
+ 	const labelSizeNumber = parseInt(labelsSize, 10);
+    const legYOffset = fontSize === "small" ? 5 :  10;
+    const legXOffset = fontSize === "small" ? 0 :  50;
+
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const chart = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+	const baseline = metricsData.find(d => d.model === "Baseline");
+const differenceData = metricsData.map(d => ({
+    model: d.model,
+    metrics: [
+        { key: "balanced_accuracy_diff", label: "Accuracy Delta", value: d.balanced_accuracy - baseline.balanced_accuracy },
+        { key: "F1_score_weighted_diff", label: "F1 Delta", value: d.F1_score_weighted - baseline.F1_score_weighted }
+    ]
+}));
+
+const models = differenceData.map(d => d.model);
+const metrics = [
+    { key: "balanced_accuracy_diff", label: "Accuracy Delta" },
+    { key: "F1_score_weighted_diff", label: "F1 Delta" }
+];
+
+const xScale = d3.scaleBand()
+    .domain(models)
+    .range([0, chartWidth])
+    .padding(0.2);
+
+const xSubScale = d3.scaleBand()
+    .domain(metrics.map(metric => metric.key))
+    .range([0, xScale.bandwidth()])
+    .padding(0.1);
+
+const yScale = d3.scaleLinear()
+    .domain([
+        d3.min(differenceData, d => d3.min(d.metrics, m => m.value)),
+        d3.max(differenceData, d => d3.max(d.metrics, m => m.value))
+    ])
+    .range([chartHeight, 0])
+    .nice();
+
+const colorScale = d3.scaleOrdinal()
+    .domain(metrics.map(metric => metric.key))
+    .range(["#3edffd", "#0762ad"]);
+
+chart.append("g")
+    .attr("transform", `translate(0, ${chartHeight})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .style("font-size", tickSize);
+
+chart.append("g")
+    .call(d3.axisLeft(yScale).ticks(5))
+    .selectAll("text")
+    .style("font-size", tickSize);
+
+chart.append("g")
+    .selectAll("g")
+    .data(differenceData)
+    .enter()
+    .append("g")
+    .attr("transform", d => `translate(${xScale(d.model)}, 0)`)
+    .selectAll("rect")
+    .data(d => d.metrics)
+    .enter()
+    .append("rect")
+    .attr("x", d => xSubScale(d.key))
+    .attr("y", d => yScale(d.value))
+    .attr("width", xSubScale.bandwidth())
+    .attr("height", d => chartHeight - yScale(d.value))
+    .attr("fill", d => colorScale(d.key));
+
+	if (fontSize !== "small"){	
+	 	const labelSizeNumber = parseInt(labelsSize, 10);
+		const legend = chart.append("g")
+			.attr("transform", `translate(${chartWidth - 120}, 0)`);
+		
+		metrics.forEach((metric, i) => {
+			const legendItem = legend.append("g")
+				.attr("transform", `translate(0, ${i * (legYOffset + 10)})`);
+		
+			legendItem.append("circle")
+				.attr("cx", 0)
+				.attr("cy", i * (labelSizeNumber/5 + 5))
+				.attr("r", legYOffset)
+				.style("fill", colorScale(metric.key));
+		
+			legendItem.append("text")
+				.attr("x", legYOffset + 5)
+				.attr("y", i * (labelSizeNumber/5 + 5))
+				.attr("dy", "0.35em")
+				.style("font-size", tickSize)
+				.text(metric.label);
+		});}
+
+    // Labels
+        chart.append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight + yoffset)
+        .attr("text-anchor", "middle")
+        .style("font-size", labelsSize)
+        .style("fill", "#042d7f")
+        .text("Models");
+
+    chart.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", -100)
+        .attr("text-anchor", "middle")
+        .style("font-size", tickSize)
+        .style("fill", "#042d7f")
+        .text("Difference in Metric from Baseline");
+
+	chart.append("text")
+        .attr("x", width/2 - margin.left)
+        .attr("y", -margin.top / 4)
+        .attr("text-anchor", "middle")
+        .style("font-size", titleSize)
+        .style("font-weight", "bold")
+        .style("fill", "#042d7f")
+        .text("Balanced Accuracy & F1 Score Deltas");
+
+        
+}
+
+
 function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
     const margin = { 
     	top: height * 0.1, 
@@ -819,16 +1067,6 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
 		});
 		
 	if (fontSize != "small"){			
-// 		const legendData = [
-// 			{ label: "Train", color: "#0762AD", pct:"80%"},
-// 			{ label: "Pneumonia", color: "#0762AD", pct:"53%" },
-// 			{ label: "Normal", color: "#438FCE", pct:"20%" },
-// 			{ label: "COVID", color: "#8AC5F7", pct:"7%" },
-// 			{ label: "Test", color: "#0492C9", pct:"20%" },
-// 			{ label: "Pneumonia", color: "#0492C9", pct:"13%" },
-// 			{ label: "Normal", color: "#41B4E0", pct:"5%" },
-// 			{ label: "COVID", color: "#6BCDF3", pct:"2%" }
-// 		];
 		const legendData = [
 			{ label: "Train", color: "#0762AD", pct:"80%"},
 			{ label: "Pneumonia", color: "#0762AD", pct:"66%" },
@@ -839,7 +1077,6 @@ function drawTwoLevelPieChart(svg, data, width, height, fontSize) {
 			{ label: "Normal", color: "#41B4E0", pct:"25%" },
 			{ label: "COVID", color: "#6BCDF3", pct:"10%" }
 		];
-		
 		
 		const legend = svg.append("g")
 			.attr("transform", `translate(${width - 100}, ${height - (legendData.length * 29 + 10)})`)
@@ -921,20 +1158,7 @@ const thumbnail2 = tnContainer.append("svg")
 	.attr("data-function", "drawEpochLineChart")
 	.style("background-color", "#bef4fd");
 
-const data = [
-	{ epoch: 1, loss: 0.3786 },
-	{ epoch: 2, loss: 0.1408 },
-	{ epoch: 3, loss: 0.0983 },
-	{ epoch: 4, loss: 0.0543 },
-	{ epoch: 5, loss: 0.0349 },
-	{ epoch: 6, loss: 0.0174 },
-	{ epoch: 7, loss: 0.0113 },
-	{ epoch: 8, loss: 0.0027 },
-	{ epoch: 9, loss: 0.0008 },
-	{ epoch: 10, loss: 0.0002 }
-];
-
-drawEpochLineChart(thumbnail2, data, 400, 200, "small");
+drawMultiEpochLineChart(thumbnail2, epochData, 400, 200, "small")
 
 const thumbnail3 = tnContainer.append("svg")
 	.attr("id", "Confusion Matrix")
@@ -952,7 +1176,10 @@ const thumbnail3 = tnContainer.append("svg")
 const thumbnail4 = tnContainer.append("svg")
     .classed("thumbnail", true)
     .attr("viewBox", "0 0 400 200")
-	.style("background-color", "#ccc");
+	.style("background-color", "#bef4fd");
+	
+drawGroupedBarChart(thumbnail4, metricsData, 400, 200, "small");
+
 
 d3.selectAll(".thumbnail")
     .on("click", function() {
@@ -988,9 +1215,11 @@ d3.selectAll(".thumbnail")
         		.style("background-color", "#bef4fd99")
 			const chartType = thumbnail.attr("data-function");
 			if (chartType === "drawEpochLineChart") {
-				drawEpochLineChart(confusion, data, 800, 700, "large");
+				drawMultiEpochLineChart(confusion, epochData, 800, 700, "large")
 			} else if (chartType === "drawTwoLevelPieChart"){
 				drawTwoLevelPieChart(confusion, pieData, 800, 624, "large");
+			} else {
+				drawGroupedBarChart(confusion, metricsData, 800, 700, "large");
 			}
 
 		}
