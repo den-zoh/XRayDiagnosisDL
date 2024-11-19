@@ -13,7 +13,7 @@ It is more important than ever to equip medical practitioners with tools to quic
 2. Install the following
 
         pip install Flask
-	pip install torch torchvision
+        pip install torch torchvision
 		
 3. From the `XRayDiagnosisDL` directory, start the API
 
