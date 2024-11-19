@@ -10,10 +10,11 @@ It is more important than ever to equip medical practitioners with tools to quic
         python 
         exit()
 
-2. Install Flask [TODO: what other installations are necessary? Can someone pull this down and see what's needed?]
+2. Install the following
 
         pip install Flask
-
+		pip install torch torchvision
+		
 3. From the `XRayDiagnosisDL` directory, start the API
 
         python -m api.prediction
