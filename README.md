@@ -19,6 +19,10 @@ It is more important than ever to equip medical practitioners with tools to quic
 
         python -m api.prediction
 
+4. Sample curl request:
+
+        curl -X POST http://127.0.0.1:5000/predict -v -d "{\"id\":500}" -H "Content-Type":"application/json"
+
 ### Running the visualization
 TODO
 
