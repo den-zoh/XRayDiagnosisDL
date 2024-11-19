@@ -14,7 +14,12 @@ if __name__ == '__main__':
     counts = []
 
     # Grab the ids of all three test classes' photos: COVID [460-575], NORMAL [1266 - 1582], PNEUMONIA [3418-4272]
-    photo_ids = list(range(1266, 1582, 1)) + list(range(460, 575, 1)) + list(range(3418, 4272, 1))
+    covid = list(range(460, 575, 1))
+    normal = list(range(1266, 1582, 1))
+    pneumonia = list(range(3418, 4272, 1))
+    
+    photo_ids = covid + normal + pneumonia
+    
     for id in photo_ids:
         x = requests.post("http://127.0.0.1:5000/predict", json={"id": id})
         if not x.ok:
@@ -58,8 +63,10 @@ if __name__ == '__main__':
         num_unique_labels = len(set([original, aug1, aug2, aug3, aug4, aug5, aug6]))
         counts.append(num_unique_labels)
         if num_unique_labels == 3:
-            print(id)
+            print(f"3 labels predicted: {id}")
 
+        if prediction != true_label:
+            print(f"incorrect classification: {id}")
 
     total = len(photo_ids)
     print(f"original_accuracy: {correct/total}")
