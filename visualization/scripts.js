@@ -239,8 +239,62 @@ xraychooser.append("text")
 
 // Middle Column
 
+// const correctColorScale = ["#2e8b57", "#228b22", "#006400", "#013220"];
+// const incorrectColorScale = ["#f8d7da", "#f08080", "#dc143c", "#8b0000"];
+// const correctColorScale = ["#a8d18d", "#85c07f", "#68a957", "#527d39"];
+// const incorrectColorScale = ["#f8d7da", "#f08080", "#dc143c", "#8b0000"];
+const correctColorScale = ["#a1eafb", "#6bd4cb", "#32bea6", "#00897b"]; // Greens
+const incorrectColorScale = ["#ffb3b3", "#ff6666", "#ff1a1a", "#cc0000"]; // Reds
+function formatLabel(label) {
+    if (label === "COVID19") return label;
+    return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+}
+
+function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actualLabel) {
+    const defaultResult = { color: "#042d7f", label: "Prediction" };
+
+    if (!predData[XRayID]) {
+        return defaultResult;
+    }
+
+    const predictionData = predData[XRayID];
+    const predictions = predictionData.predictions;
+
+    const selectedPrediction = predToGet === "original" 
+        ? predictions.original 
+        : predictions.augmentation[predToGet];
+
+    if (!selectedPrediction) {
+        return defaultResult;
+    }
+
+    const predictedLabel = selectedPrediction.prediction;
+    const probabilities = selectedPrediction.probabilities;
+    const predictedProbability = probabilities[predictedLabel];
+    const isCorrect = predictedLabel === actualLabel;
+    const colorScale = isCorrect ? correctColorScale : incorrectColorScale;
+
+    let color;
+    if (predictedProbability >= 0.75) {
+        color = colorScale[3];
+    } else if (predictedProbability >= 0.5) {
+        color = colorScale[2];
+    } else if (predictedProbability >= 0.25) {
+        color = colorScale[1];
+    } else {
+        color = colorScale[0];
+    }
+    
+    const percentage = (predictedProbability * 100).toFixed(0);
+    const label = `${formatLabel(predictedLabel)} ${percentage}%`;
+
+    return { color , label };
+}
+
+
 function DrawAugments(resultsCont, xrayID) {
-	bmargin = "45px"
+	let bmargin = "45px";
+	
 	for (const range of rangeData) {
         if (xrayID >= range.low && xrayID <= range.high) {
             xrayActual = range.label;
@@ -261,17 +315,20 @@ function DrawAugments(resultsCont, xrayID) {
 	thumbnailContainer.selectAll("img").remove();
     
 	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
+	
+	const resHFlip = getColorAndPredictionLabel("horizontal_flip", xrayID, xrayActual);
+	const res5deg = getColorAndPredictionLabel("5_degree_rotation", xrayID, xrayActual);
 
 	thumbnailContainer.append("p")
-		.text("Prediction")
+		.text(resHFlip.label)
 		.classed("prediction", true)
 		.attr("xrayActual", xrayActual)
 		.attr("xrayID", xrayID)
 		.style("text-align", "center")
-		.style("font-size", "18pt")
-		.style("color", "#042d7f")
+		.style("font-size", "16pt")
+		.style("color", resHFlip.color)
 		.style("font-weight", "bold")
-		.style("background-color", "#bef4fd66")
+// 		.style("background-color", "#bef4fd66")
 		.style("display", "none")
 		.attr("transform", "scale(-1, 1) translate(-160, 0)");
 
@@ -298,15 +355,14 @@ function DrawAugments(resultsCont, xrayID) {
 			.classed("xray-thumbnail-container", true);
 	
 	thumbnailContainer2.append("p")
-		.text("Prediction")
+		.text(res5deg.label)
 		.classed("prediction", true)
 		.attr("xrayActual", xrayActual)
 		.attr("xrayID", xrayID)
 		.style("text-align", "center")
-		.style("font-size", "18pt")
-		.style("color", "#042d7f")
+		.style("font-size", "16pt")
+		.style("color", res5deg.color)
 		.style("font-weight", "bold")
-		.style("background-color", "#bef4fd66")
 		.style("display", "none");
 		
 	thumbnailContainer2.append("img")
@@ -326,22 +382,47 @@ function DrawAugments(resultsCont, xrayID) {
 		.style("font-weight", "bold")
 		.style("margin-bottom", bmargin)
 		.style("background-color", "#bef4fd99");
-		
+	
+	const resBlur = getColorAndPredictionLabel("increase_blur", xrayID, xrayActual);
+	const resBright = getColorAndPredictionLabel("increase_brightness", xrayID, xrayActual);
+	const resSharp = getColorAndPredictionLabel("increase_sharpness", xrayID, xrayActual);
+	const resContr = getColorAndPredictionLabel("increase_contrast", xrayID, xrayActual);
+
+	let plabel;
+	let pcolor;
 	thumbnails.forEach(({ id, label, img }) => {
+		switch (id) {
+			case "#xraythumb1":
+				pcolor = resBright.color;
+				plabel = resBright.label;
+				break;
+			case "#xraythumb2":
+				pcolor = resSharp.color;
+				plabel = resSharp.label;
+				break;
+			case "#xraythumb3":
+				pcolor = resBlur.color;
+				plabel = resBlur.label;
+				break;
+			default:
+				pcolor = resContr.color;
+				plabel = resContr.label;
+				break;
+		}
 		const thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 		
 		thumbnailContainer.append("p")
-			.text("Prediction")
+			.text(plabel)
 			.classed("prediction", true)
 			.attr("xrayActual", xrayActual)
 			.attr("xrayID", xrayID)
 			.style("text-align", "center")
-			.style("font-size", "18pt")
-			.style("color", "#042d7f")
+			.style("font-size", "16pt")
+			.style("color", pcolor)
 			.style("font-weight", "bold")
-			.style("display", "none")
-			.style("background-color", "#bef4fd66");
+			.style("display", "none");
+// 			.style("background-color", "#bef4fd66");
 			
 		thumbnailContainer.append("img")
 			.attr("src", img) 
@@ -442,23 +523,17 @@ function DrawMiddleButtons(){
 		.style("font-weight", "bold");
 	
 	resultsLabel.on("click", () => {
-		console.log("Results Label clicked");
 		toggleResults();
 	});
 	resultsButton.on("click", () => {
-		console.log("Results Button clicked");
 		toggleResults();
 	});
-	augButton.on("click", () => {
-		console.log("Aug Button clicked");
-	
+	augButton.on("click", () => {	
 		const predictions = rescontainer.selectAll(".prediction");
 		predictions.each(function () {
 			const currentDisplay = d3.select(this).style("display");
 			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
 		});
-	
-		console.log("Toggled visibility of prediction labels.");
 	});
 
 	augLabel.on("click", () => {
@@ -469,8 +544,6 @@ function DrawMiddleButtons(){
 			const currentDisplay = d3.select(this).style("display");
 			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
 		});
-	
-		console.log("Toggled visibility of prediction labels.");
 	});
 
 }
@@ -484,18 +557,17 @@ DrawAugments(rescontainer, 552)
 DrawMiddleButtons()
 
 console.log(predData);
-
 function toggleResults() {
-    console.log("toggleResults triggered");
-
-	console.log("Rescontainer:", rescontainer);
-
-	console.log("Rescontainer:", rescontainer);
-	console.log(document.querySelectorAll(".prediction"));
+//     console.log("toggleResults triggered");
+// 
+// 	console.log("Rescontainer:", rescontainer);
+// 
+// 	console.log("Rescontainer:", rescontainer);
+// 	console.log(document.querySelectorAll(".prediction"));
 
 	const predictions = rescontainer.selectAll(".prediction");
-	console.log(`Number of predictions: ${predictions.size()}`);
-	console.log(predictions.nodes());
+// 	console.log(`Number of predictions: ${predictions.size()}`);
+// 	console.log(predictions.nodes());
 
 	predictions.each(function (d, i) {
 		const currentDisplay = d3.select(this).style("display");
