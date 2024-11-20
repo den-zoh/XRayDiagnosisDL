@@ -16,3 +16,4 @@
 
 ### Right Pane
 - Click any chart thumbnail to zoom in.
+
