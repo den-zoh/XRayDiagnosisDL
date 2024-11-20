@@ -51,9 +51,9 @@ const allSimilarsData = {
             ["NORMAL", 323],
             ["NORMAL", 234],
             ["NORMAL", 234],
-            ["COVID19", 357],
-            ["PNEUMONIA", 234],
-            ["COVID19", 234],
+            ["NORMAL", 357],
+            ["NORMAL", 339],
+            ["NORMAL", 427],
         ]
     },
 };
