@@ -15,6 +15,49 @@ const samples = [
     3497, 3904, 3451, 490, 1462
 ];
 
+const allSimilarsData = {
+    490: {
+        similars: [
+            ["COVID19", 222],
+            ["COVID19", 234],
+            ["NORMAL", 234],
+            ["COVID19", 357],
+            ["PNEUMONIA", 234],
+            ["COVID19", 234],
+        ]
+    },
+    552: {
+        similars: [
+            ["COVID19", 222],
+            ["COVID19", 344],
+            ["NORMAL", 234],
+            ["COVID19", 357],
+            ["PNEUMONIA", 234],
+            ["COVID19", 234],
+        ]
+    },
+    1266: {
+        similars: [
+            ["COVID19", 222],
+            ["PNEUMONIA", 124],
+            ["NORMAL", 234],
+            ["PNEUMONIA", 357],
+            ["PNEUMONIA", 234],
+            ["COVID19", 234],
+        ]
+    },
+    1451: {
+        similars: [
+            ["NORMAL", 323],
+            ["NORMAL", 234],
+            ["NORMAL", 234],
+            ["COVID19", 357],
+            ["PNEUMONIA", 234],
+            ["COVID19", 234],
+        ]
+    },
+};
+
 const metricsData = [
 	{
 		model: "Baseline",

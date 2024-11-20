@@ -3,7 +3,7 @@ function formatLabel(label) {
     return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
 }
 
-function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actualLabel) {
+function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel) {
     const defaultResult = { color: "#042d7f", label: "Prediction" };
 
     if (!predData[XRayID]) {
@@ -45,64 +45,60 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actual
 }
 
 
-function DrawAugments(resultsCont, xrayID) {
+function DrawAugments(resultsCont, xrID) {
+	console.log(`xrID is ${xrID}`)
 	let bmargin = "5px";
 	
 	for (const range of testRangeData) {
-        if (xrayID >= range.low && xrayID <= range.high) {
+        if (xrID >= range.low && xrID <= range.high) {
             xrayActual = range.label;
             break;
         }
     }
     
     const thumbnails = [
-        { id: "#xraythumb3", label: "Brightness x 1.2", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbr.jpg` },
-        { id: "#xraythumb4", label: "Contrast x 1.1", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augct.jpg` },
-        { id: "#xraythumb5", label: "Blur x 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augbl.jpg` },
-        { id: "#xraythumb6", label: "Sharpen x 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150_augsh.jpg` }
+        { id: "#xraythumb3", label: "Brightness x 1.2", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150_augbr.jpg` },
+        { id: "#xraythumb4", label: "Contrast x 1.1", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150_augct.jpg` },
+        { id: "#xraythumb5", label: "Blur x 0.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150_augbl.jpg` },
+        { id: "#xraythumb6", label: "Sharpen x 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150_augsh.jpg` }
     ];
     
-	const predictionDiv = resultsCont.select(".overall-prediction");
-    
-    if (!predictionDiv.empty()) {predictionDiv.text("");} 
-    else {
-        resultsCont.append("div")
-            .attr("class", "overall-prediction")
-            .style("display", "none");
-    }
-    
-    const predictedLabel = predData[xrayID]?.predicted_label || "Unknown";
+	resultsCont.html("");
+	
+	const overallPrediction = resultsCont.append("div")
+		.attr("class", "overall-prediction")
+		.style("display", "none");
+
+    const predictedLabel = predData[xrID]?.predicted_label || "Unknown";
     if (predictedLabel.toLowerCase() === xrayActual.toLowerCase()) {
     	predictionColor = correctColorScale[3]
     }
     else {
     	predictionColor = incorrectColorScale[3]
     }
-    console.log(predictedLabel, predictionColor)
-    resultsCont.select(".overall-prediction")
+    overallPrediction
 		.html(`Model Prediction: ${formatLabel(predictedLabel)}<br>Actual Label: ${formatLabel(xrayActual)}`)
 		.style("color", predictionColor);
 
+//     resultsCont.selectAll(".xray-thumbnail-container").remove();
+
     let thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
+	    
+	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150.jpg`
 	
-	thumbnailContainer.selectAll("img").remove();
-    
-	img1 = `./images/Data_200x150/test/${xrayActual}/${xrayActual}(${xrayID})_200x150.jpg`
-	
-	const resHFlip = getColorAndPredictionLabel("horizontal_flip", xrayID, xrayActual);
-	const res5deg = getColorAndPredictionLabel("5_degree_rotation", xrayID, xrayActual);
+	const resHFlip = getColorAndPredictionLabel("horizontal_flip", xrID, xrayActual);
+	const res5deg = getColorAndPredictionLabel("5_degree_rotation", xrID, xrayActual);
 
 	thumbnailContainer.append("p")
 		.text(resHFlip.label)
 		.classed("prediction", true)
 		.attr("xrayActual", xrayActual)
-		.attr("xrayID", xrayID)
+		.attr("xrayID", xrID)
 		.style("text-align", "center")
 		.style("font-size", "14pt")
 		.style("color", resHFlip.color)
 		.style("font-weight", "bold")
-// 		.style("background-color", "#bef4fd66")
 		.style("display", "none")
 		.attr("transform", "scale(-1, 1) translate(-160, 0)");
 
@@ -132,7 +128,7 @@ function DrawAugments(resultsCont, xrayID) {
 		.text(res5deg.label)
 		.classed("prediction", true)
 		.attr("xrayActual", xrayActual)
-		.attr("xrayID", xrayID)
+		.attr("xrayID", xrID)
 		.style("text-align", "center")
 		.style("font-size", "14pt")
 		.style("color", res5deg.color)
@@ -157,10 +153,10 @@ function DrawAugments(resultsCont, xrayID) {
 		.style("margin-bottom", bmargin)
 		.style("background-color", "#bef4fd99");
 	
-	const resBlur = getColorAndPredictionLabel("increase_blur", xrayID, xrayActual);
-	const resBright = getColorAndPredictionLabel("increase_brightness", xrayID, xrayActual);
-	const resSharp = getColorAndPredictionLabel("increase_sharpness", xrayID, xrayActual);
-	const resContr = getColorAndPredictionLabel("increase_contrast", xrayID, xrayActual);
+	const resBlur = getColorAndPredictionLabel("increase_blur", xrID, xrayActual);
+	const resBright = getColorAndPredictionLabel("increase_brightness", xrID, xrayActual);
+	const resSharp = getColorAndPredictionLabel("increase_sharpness", xrID, xrayActual);
+	const resContr = getColorAndPredictionLabel("increase_contrast", xrID, xrayActual);
 
 	let plabel;
 	let pcolor;
@@ -190,7 +186,7 @@ function DrawAugments(resultsCont, xrayID) {
 			.text(plabel)
 			.classed("prediction", true)
 			.attr("xrayActual", xrayActual)
-			.attr("xrayID", xrayID)
+			.attr("xrayID", xrID)
 			.style("text-align", "center")
 			.style("font-size", "14pt")
 			.style("color", pcolor)
@@ -218,6 +214,65 @@ function DrawAugments(resultsCont, xrayID) {
 }
 
 
+function DrawSimilarXrays(resultsCont, oneSimXray, xrayAct, xrayID) {
+	console.log(oneSimXray)
+	let bmargin = "5px";
+    let TBs = [];
+    let toDraw = {};
+    oneSimXray.forEach(item => {
+    	console.log(item);
+		const simID = item[1];
+		const simLabel = item[0];
+	
+		console.log(`Label: ${simLabel}, ID: ${simID}`);
+	
+		toDraw = { id: "#xraythumb1", label: `${simLabel}(${simID})`, img: `./images/Data_200x150/train/${simLabel}/${simLabel}(${simID})_200x150.jpg` },
+		TBs.push(toDraw);
+	});
+    
+    console.log(TBs);
+
+	resultsCont.html("");
+		
+	const overallPrediction = resultsCont.append("div")
+		.attr("class", "overall-prediction")
+		.style("display", "none"); 
+			
+	TBs.forEach(({ id, label, img }) => {
+		
+		const thumbnailContainer = resultsCont.append("div")
+			.classed("xray-thumbnail-container", true);
+		
+		thumbnailContainer.append("p")
+			.text("Prediction")
+			.classed("prediction", true)
+			.attr("xrayActual", xrayAct)
+			.attr("xrayID", xrayID)
+			.style("text-align", "center")
+			.style("font-size", "14pt")
+			.style("color", "#042d7f")
+			.style("font-weight", "bold")
+			.style("display", "none");
+			
+		thumbnailContainer.append("img")
+			.attr("src", img) 
+			.attr("width", 160)
+			.attr("height", 120)
+			.attr("id", id)
+			.classed("xray-thumbnail", true); 
+	
+		thumbnailContainer.append("p")
+			.text(label)
+			.style("text-align", "center")
+			.style("font-size", "10pt")
+			.style("color", "#042d7f")
+			.style("font-weight", "bold")
+			.style("margin-bottom", bmargin)
+			.style("background-color", "#bef4fd99");
+	});
+}
+
+
 function DrawMiddleButtons(){
 	const mwidth = rescontainer.node().clientWidth * widthPercentage - 5;
 	const mmargin = 0
@@ -228,7 +283,7 @@ function DrawMiddleButtons(){
 		.append("svg")
 		.attr("height", middleColumnHeight * heightPercentage)
 		
-	resbuttons.append("path")
+	const simButton = resbuttons.append("path")
 		.attr("d", `
 			M ${mmargin + 2 * mwidth}, 5 
 			h ${mwidth - radius} 
@@ -237,11 +292,11 @@ function DrawMiddleButtons(){
 			h -${mwidth - radius}
 			z
 		`)
-		.style("fill", "#0e8cd2")
+		.style("fill", "#3edffd")
 		.style("stroke", "#16afeb")
 		.style("stroke-mwidth", 3);
 	
-	resbuttons.append("text")
+	const simButtonLabel =resbuttons.append("text")
 		.attr("x", 2 * (mmargin + mwidth) + mwidth / 2 + mmargin / 2)
 		.attr("y", 5 + height / 4)
 		.attr("dy", "0.35em")
@@ -296,60 +351,69 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
-	resultsLabel.on("click", () => {toggleResults();});
-	resultsButton.on("click", () => {toggleResults();});
 	
-	augButton.on("click", () => {	
-		const predictions = rescontainer.selectAll(".prediction");
-		const predictionDiv = rescontainer.select(".overall-prediction");
-		predictionDiv.style("display", "none");
-		predictions.each(function () {
-			const currentDisplay = d3.select(this).style("display");
-			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
-		});
+	
+	
+	resultsLabel.on("click", () => {
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawAugments(rescontainer, xrID)
+		turnOnResults();
+	});
+	resultsButton.on("click", () => {
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawAugments(rescontainer, xrID)
+		turnOnResults();
+	});
+	
+	augButton.on("click", () => {
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawAugments(rescontainer, xrID)
 	});
 
 	augLabel.on("click", () => {	
-		const predictions = rescontainer.selectAll(".prediction");
-		const predictionDiv = rescontainer.select(".overall-prediction");
-		predictionDiv.style("display", "none");
-		predictions.each(function () {
-			const currentDisplay = d3.select(this).style("display");
-			d3.select(this).style("display", currentDisplay === "block" ? "none" : "block");
-		});
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawAugments(rescontainer, xrID)
 	});
-
+	
+	simButton.on("click", () => {	
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawSimilarXrays(rescontainer, allSimilarsData[xrID]["similars"],xrayActual, xrID)
+	});
+	
+	simButtonLabel.on("click", () => {	
+		const tbnails = document.querySelectorAll('.prediction');
+		const selectedTbnail = tbnails[0];
+		const xrID = parseInt(selectedTbnail.getAttribute('xrayID'), 10);
+		const xrActual = selectedTbnail.getAttribute('xrayActual');
+		DrawSimilarXrays(rescontainer, allSimilarsData[xrID]["similars"],xrayActual, xrID)
+	});
 }
 
 
-function toggleResults() {
-//     console.log("toggleResults triggered");
-// 	console.log("Rescontainer:", rescontainer);
-// 	console.log(document.querySelectorAll(".prediction"));
-    const predictionDiv = rescontainer.select(".overall-prediction");
+function turnOnResults() {
+	const predictionDiv = rescontainer.select(".overall-prediction");
 	const predictions = rescontainer.selectAll(".prediction");
-	const predDisplay = predictionDiv.style("display")
-	
-// 	console.log(`Number of predictions: ${predictions.size()}`);
-// 	console.log(predictions.nodes());
-// 	console.log(predictionDiv)
-// 	console.log(predDisplay)
-	
-	if (predDisplay === "none") {
-        predictionDiv.style("display", "block");
-    } else {
-        predictionDiv.style("display", "none");
-    }
-    
+ 	const predDisplay = predictionDiv.style("display")
+	predictionDiv.style("display", "block");
 	predictions.each(function (d, i) {
-		const currentDisplay = d3.select(this).style("display");
-		if (currentDisplay !== "none") {
-			d3.select(this).style("display", "none");
-			return;
-		}
+		d3.select(this).style("display", "block");
 		const actualLabel = d3.select(this).attr("xrayActual");
 		const XRayID = d3.select(this).attr("xrayID");
-		d3.select(this).style("display", "block");
 	});
 }
 

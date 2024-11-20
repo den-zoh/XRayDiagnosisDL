@@ -173,28 +173,27 @@ function drawMultiEpochLineChart(svg, data, width, height, fontSize) {
             .attr("d", line);
     });
     
- 	const labelSizeNumber = parseInt(labelsSize, 10);
-    const legYOffset = fontSize === "small" ? 5 :  10;
-    const legXOffset = fontSize === "small" ? 0 :  50;
-    
-    const legend = svg.append("g")
-		.attr("transform", `translate(${width - margin.right - 120 - legXOffset}, ${margin.top + chartHeight/4})`);
-
-	console.log(labelSizeNumber)
-	data.forEach((d, i) => {
-		legend.append("circle")
-			.attr("cx", - legXOffset/5)
-			.attr("cy", i * (labelSizeNumber + legYOffset))
-			.attr("r", legYOffset)
-			.style("fill", colorScale(d.model));
+    if (fontSize !== "small"){	
+    	const labelSizeNumber = parseInt(labelsSize, 10);
+		const legYOffset = 10;
+		const legXOffset = 50;
+		const legend = svg.append("g")
+			.attr("transform", `translate(${width - margin.right - 120 - legXOffset}, ${margin.top + chartHeight/4})`);
 	
-		legend.append("text")
-			.attr("x", 5 )
-			.attr("y", i * (labelSizeNumber + legYOffset))
-			.attr("dy", "0.35em")
-			.style("font-size", labelsSize)
-			.text(d.model);
-	});
+		data.forEach((d, i) => {
+			legend.append("circle")
+				.attr("cx", - legXOffset/5)
+				.attr("cy", i * (labelSizeNumber + legYOffset))
+				.attr("r", legYOffset)
+				.style("fill", colorScale(d.model));
+		
+			legend.append("text")
+				.attr("x", 5 )
+				.attr("y", i * (labelSizeNumber + legYOffset))
+				.attr("dy", "0.35em")
+				.style("font-size", labelsSize)
+				.text(d.model);
+		});}
 }
 
 

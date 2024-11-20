@@ -28,3 +28,6 @@ const margin = (containerWidth - 3 * width) / 2
 
 const correctColorScale = ["#a1eafb", "#6bd4cb", "#32bea6", "#00897b"]; // Greens
 const incorrectColorScale = ["#ffb3b3", "#ff6666", "#ff1a1a", "#cc0000"]; // Reds
+
+let currentXRay;
+let currentXRayLabel;
