@@ -21,6 +21,8 @@
     box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap');
+
 body {
 	background-image: url("images/other_slide_background.png") !important;
     background-size: cover;
@@ -31,6 +33,26 @@ body {
     justify-content: center;
     min-height: 100vh;
 }
+.heading {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+}
+
+.heading h1{
+	font-family: 'Merriweather','Georgia', serif;
+	line-height: 0.9;
+	margin: 0;
+    padding: 0;
+}
+
+.heading h2 {
+	font-family: 'Pacifico','Dancing Script','Great Vibes', cursive; 
+	margin-top: -10px;
+    padding: 0;
+}
+
 
 h2 {
 	padding: 5px;
@@ -62,6 +84,14 @@ h3 {
 .middle {
     flex: 0.7;
 	background-color: #042d7fcc; 	
+}
+
+.middle h2 {
+	text-align: center;
+	color: var(--electric-cyan);
+/* 
+	margin-bottom: 2%;
+ */
 }
 
 #xray-image {

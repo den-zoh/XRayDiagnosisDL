@@ -105,22 +105,11 @@ const chooser = d3.select("#xray-chooser-container")
     .attr("width", "100%")
     .attr("height", "20%");
 
-const rangeData = [
-			{ label: "PNEUMONIA", low: 3418, high:4272 },
-			{ label: "NORMAL", low: 1266, high:1582 },
-			{ label: "COVID19", low: 460, high:575 }
-];
-
-const samples = [
-    552, 1266, 1451, 520, 1308, 561, 4062, 
-    3497, 3904, 3451, 490, 1462
-];
-
 let fileList = [];
 let actLabel = ""
 const defaultIndex = 0
 for (const sample of samples) {
-    for (const range of rangeData) {
+    for (const range of testRangeData) {
         if (sample >= range.low && sample <= range.high) {
             actLabel = range.label;
             break;
@@ -239,10 +228,6 @@ xraychooser.append("text")
 
 // Middle Column
 
-// const correctColorScale = ["#2e8b57", "#228b22", "#006400", "#013220"];
-// const incorrectColorScale = ["#f8d7da", "#f08080", "#dc143c", "#8b0000"];
-// const correctColorScale = ["#a8d18d", "#85c07f", "#68a957", "#527d39"];
-// const incorrectColorScale = ["#f8d7da", "#f08080", "#dc143c", "#8b0000"];
 const correctColorScale = ["#a1eafb", "#6bd4cb", "#32bea6", "#00897b"]; // Greens
 const incorrectColorScale = ["#ffb3b3", "#ff6666", "#ff1a1a", "#cc0000"]; // Reds
 function formatLabel(label) {
@@ -293,9 +278,9 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID = 552, actual
 
 
 function DrawAugments(resultsCont, xrayID) {
-	let bmargin = "27px";
+	let bmargin = "5px";
 	
-	for (const range of rangeData) {
+	for (const range of testRangeData) {
         if (xrayID >= range.low && xrayID <= range.high) {
             xrayActual = range.label;
             break;
@@ -1226,4 +1211,4 @@ d3.selectAll(".thumbnail")
     });
     
     
-console.log("D3.js script loaded and ready for development");
+console.log("Script loaded...");
