@@ -51,8 +51,8 @@ def model_transformations() -> Compose:
 
     transform = transforms.Compose(
         [
-            transforms.Lambda(apply_clahe),
-            transforms.Lambda(apply_noise_reduction),
+            # transforms.Lambda(apply_clahe),
+            # transforms.Lambda(apply_noise_reduction),
             transforms.Resize((400, 300)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5], std=[0.5]),
