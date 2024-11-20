@@ -15,7 +15,7 @@ It is more important than ever to equip medical practitioners with tools to quic
         pip install Flask
         pip install torch torchvision
 		
-3. From the `XRayDiagnosisDL` directory, start the API
+3. From the `CODE` directory, start the API
 
         python -m api.prediction
 
