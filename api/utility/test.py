@@ -1,5 +1,8 @@
 import requests
 from statistics import mean
+from sklearn import metrics
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 if __name__ == '__main__':
     correct = 0
@@ -11,15 +14,20 @@ if __name__ == '__main__':
     correct6 = 0
     correct_prediction = 0
 
+    # Used for calculating average number of labels 
     counts = []
 
     # Grab the ids of all three test classes' photos: COVID [460-575], NORMAL [1266 - 1582], PNEUMONIA [3418-4272]
     covid = list(range(460, 575, 1))
     normal = list(range(1266, 1582, 1))
     pneumonia = list(range(3418, 4272, 1))
-    
+    sample_10 = list(range(460,470,1))
+
     photo_ids = covid + normal + pneumonia
-    
+
+    y_test = []
+    y_pred = []
+
     for id in photo_ids:
         x = requests.post("http://127.0.0.1:5000/predict", json={"id": id})
         if not x.ok:
@@ -33,6 +41,8 @@ if __name__ == '__main__':
             true_label = 'COVID19'
         else:
             true_label = 'PNEUMONIA'
+        
+        y_test.append(true_label)
 
         original = resp['predictions']['original']['prediction']
         aug1 = resp['predictions']['augmentation']['5_degree_rotation']['prediction']
@@ -42,6 +52,8 @@ if __name__ == '__main__':
         aug5 = resp['predictions']['augmentation']['increase_contrast']['prediction']
         aug6 = resp['predictions']['augmentation']['increase_brightness']['prediction']
         prediction = resp['predicted_label']
+
+        y_pred.append(prediction)
 
         if original == true_label:
             correct += 1
@@ -60,8 +72,18 @@ if __name__ == '__main__':
         if prediction == true_label:
             correct_prediction += 1
         
-        num_unique_labels = len(set([original, aug1, aug2, aug3, aug4, aug5, aug6]))
+        num_unique_labels = len(set([
+            original, 
+            aug1, 
+            aug2, 
+            aug3, 
+            aug4, 
+            aug5, 
+            aug6
+        ]))
+
         counts.append(num_unique_labels)
+
         if num_unique_labels == 3:
             print(f"3 labels predicted: {id}")
 
@@ -81,3 +103,16 @@ if __name__ == '__main__':
     print(f"one label: {counts.count(1)}")
     print(f"two labels: {counts.count(2)}")
     print(f"three labels: {counts.count(3)}")
+
+    class_names = ['COVID19', 'NORMAL', 'PNEUMONIA']
+    cm = metrics.confusion_matrix(y_test, y_pred, labels=class_names)
+    print(cm)
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label')
+    plt.title('Confusion Matrix')
+    plt.savefig('confusion_matrix.jpg')
+
+    print(metrics.balanced_accuracy_score(y_test, y_pred))
+    print(metrics.f1_score(y_test, y_pred, average="weighted"))
