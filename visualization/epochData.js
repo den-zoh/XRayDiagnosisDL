@@ -73,3 +73,5 @@ const data = [
 	{ epoch: 9, loss: 0.0008 },
 	{ epoch: 10, loss: 0.0002 }
 ];
+
+console.log("Epoch data loaded...");

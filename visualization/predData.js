@@ -759,3 +759,5 @@ const predData= {
         }
     },
 };
+
+console.log("Prediction Data loaded...");

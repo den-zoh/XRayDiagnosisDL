@@ -37,3 +37,31 @@ const metricsData = [
 		F1_score_weighted: 0.9253336254089309,
 	},
 ];
+
+const pieData = {
+    outer: [
+        { label: "Train", value: 5144 },
+        { label: "Test", value: 1288 },
+    ],
+    inner: [
+        { label: "Pneumonia", value: 3418 },
+        { label: "Normal", value: 1266 },
+        { label: "COVID", value: 460 },
+        { label: "Pneumonia", value: 855 },
+        { label: "Normal", value: 317 },
+        { label: "COVID", value: 116 },
+    ],
+};
+
+const pieLegendData = [
+			{ label: "Train", color: "#0762AD", pct:"80%"},
+			{ label: "Pneumonia", color: "#0762AD", pct:"66%" },
+			{ label: "Normal", color: "#438FCE", pct:"25%" },
+			{ label: "COVID", color: "#8AC5F7", pct:"9%" },
+			{ label: "Test", color: "#0492C9", pct:"20%" },
+			{ label: "Pneumonia", color: "#0492C9", pct:"65%" },
+			{ label: "Normal", color: "#41B4E0", pct:"25%" },
+			{ label: "COVID", color: "#6BCDF3", pct:"10%" }
+		];
+
+console.log("Metrics data loaded...");

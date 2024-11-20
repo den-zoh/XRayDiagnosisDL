@@ -33,6 +33,13 @@ body {
     justify-content: center;
     min-height: 100vh;
 }
+h2 {
+	padding: 5px;
+	text-align: center;
+	color: var(--electric-cyan);
+	margin-bottom: 2%;
+} 
+
 .heading {
     position: relative;
     width: 100%;
@@ -40,25 +47,21 @@ body {
     margin: 0;
 }
 
-.heading h1{
-	font-family: 'Merriweather','Georgia', serif;
+.heading h1 {
+	font-family: 'Merriweather', 'Georgia', serif;
 	line-height: 0.9;
 	margin: 0;
-    padding: 0;
+	padding: 0;
+	color: var(--cerulean);
+	text-shadow: 1px 1px 2px var(--catalina-blue);
 }
+
 
 .heading h2 {
 	font-family: 'Pacifico','Dancing Script','Great Vibes', cursive; 
 	margin-top: -10px;
     padding: 0;
-}
-
-
-h2 {
-	padding: 5px;
-	text-align: center;
-	color: var(--electric-cyan);
-	margin-bottom: 5%;
+    color: var(--cerulean);
 }
 
 h3 {
@@ -89,9 +92,6 @@ h3 {
 .middle h2 {
 	text-align: center;
 	color: var(--electric-cyan);
-/* 
-	margin-bottom: 2%;
- */
 }
 
 #xray-image {
