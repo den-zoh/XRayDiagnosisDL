@@ -28,6 +28,7 @@ It is more important than ever to equip medical practitioners with tools to quic
 2. Open the `index.html` file in any browser.  
    **Best results on a MacBook Air 15".**
 
+## Execution
 #### Pane Descriptions
 
 ##### Left Pane
@@ -40,12 +41,3 @@ It is more important than ever to equip medical practitioners with tools to quic
 
 ##### Right Pane
 - Click any chart thumbnail to zoom in.
-
-
-## Execution
-TODO: Update with accurate steps/details when finalized
-1. Navigate to the visualization (see instructions above)
-2. Observe exploratory data analysis and model evaluation metrics in righthand column
-3. To perform a prediction task, click "Use Sample X-ray" in the lefthand column and select an x-ray image
-4. In middle column, see applied data augmentation and relative predictive labels
-5. In middle column, select "Similar" to see similar images from the training dataset.
