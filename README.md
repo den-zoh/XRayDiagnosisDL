@@ -24,7 +24,23 @@ It is more important than ever to equip medical practitioners with tools to quic
         curl -X POST http://127.0.0.1:5000/predict -v -d "{\"id\":500}" -H "Content-Type":"application/json"
 
 ### Running the visualization
-TODO
+1. Place all the files and the `images` folder in the same location.
+2. Open the `index.html` file in any browser.  
+   **Best results on a MacBook Air 15".**
+
+#### Pane Descriptions
+
+##### Left Pane
+- Click sample X-rays to load them.
+
+##### Middle Pane
+- Click **Augments** to see the augmented X-ray images.
+- Click **Results** to see the model predictions.
+- Click **Similar** to see X-rays the model chose as similar.
+
+##### Right Pane
+- Click any chart thumbnail to zoom in.
+
 
 ## Execution
 TODO: Update with accurate steps/details when finalized
