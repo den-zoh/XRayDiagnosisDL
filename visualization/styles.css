@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap');
+
 :root{
 	/* CSS HEX */
 	--cerulean: #0e8cd2;
@@ -21,7 +23,6 @@
     box-sizing: border-box;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap');
 
 body {
 	background-image: url("images/other_slide_background.png") !important;

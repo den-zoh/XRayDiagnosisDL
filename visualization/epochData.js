@@ -1,3 +1,4 @@
+// This is real data produced by the model
 const epochData = [
     {
         model: "Baseline",

@@ -1,4 +1,6 @@
+// Draws XRay, Heat Map, and Segmentation buttons
 function DrawXRayButtons(svg){
+	// Segmentation button. note: colors are "inactive"
 	svg.append("path")
 		.attr("d", `
 			M ${margin + 2 * width}, 5 
@@ -23,6 +25,7 @@ function DrawXRayButtons(svg){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
+	// Heat map button. note: colors are "inactive"
 	svg.append("rect")
 		.attr("x", margin + width)
 		.attr("y", 5)
@@ -43,6 +46,7 @@ function DrawXRayButtons(svg){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
+	// XRay button
 	svg.append("path")
 		.attr("d", `
 			M ${margin + width}, 5
@@ -69,7 +73,9 @@ function DrawXRayButtons(svg){
 }
 
 
+// Draws the chooser list where the user can select a Sample xray to view
 function DrawChooserList(){
+	// Creates the default list of samples
 	let fileList = [];
 	let actLabel = ""
 	const defaultIndex = 0
@@ -89,6 +95,7 @@ function DrawChooserList(){
 	chooserList.style.gridTemplateColumns = "repeat(3, 1fr)";
 	chooserList.style.gap = "10px";
 	
+	// Adds file items to the chooser list
 	fileList.forEach((file,index) => {
 		const fileItem = document.createElement("div");
 		fileItem.style.display = "flex";
@@ -116,20 +123,23 @@ function DrawChooserList(){
 		fileItem.appendChild(fileImage);
 		fileItem.appendChild(fileName);
 	
-		// onclick event
+		// Click handler for chooser list
 		fileItem.onclick = () => {
 			const clickedIndex = Array.from(chooserList.children).indexOf(fileItem);
 	
+			// Adds the default border to all items
 			const tiles = document.querySelectorAll("#xray-chooser-list > div");
 			tiles.forEach(tile => {
 				tile.style.border = "1px solid #042d7f"; 
 			});
 	
+			// Adds a thick border to the selected item
 			fileItem.style.border = "3px solid #3edffd";
 			const resultsContainer = middleColumn.select("#results-container");
 			resultsContainer.html("");
 			DrawAugments(resultsContainer, xrayID=samples[clickedIndex]);
 			
+			// Loads the sample into the big xray
 			const xrayImage = document.getElementById("xray-image");
 			xrayImage.src = fileList[clickedIndex].thumbnail;
 		};
@@ -138,7 +148,9 @@ function DrawChooserList(){
 	});
 }
 
+// Draws the Upload and Use Sample
 function DrawChooserButtons(svg){
+	// Use sample
 	svg.append("path")
 		.attr("d", `
 			M ${margin + 2 * width}, 10 
@@ -163,6 +175,7 @@ function DrawChooserButtons(svg){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 		
+	// Upload Xray. Note: inactive
 	svg.append("path")
 		.attr("d", `
 			M ${margin + 2 * width}, 10

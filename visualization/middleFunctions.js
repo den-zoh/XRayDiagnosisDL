@@ -1,9 +1,13 @@
+// Converts labels to camel case except COVID
 function formatLabel(label) {
     if (label === "COVID19") return label;
     return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
 }
 
+// Produces colors and labels for the predictions in the Results
 function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel) {
+    
+    // Default
     const defaultResult = { color: "#042d7f", label: "Prediction" };
 
     if (!predData[XRayID]) {
@@ -13,6 +17,8 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel)
     const predictionData = predData[XRayID];
     const predictions = predictionData.predictions;
 
+	// allows for prediction based on the original image, 
+	// though this is never displayed
     const selectedPrediction = predToGet === "original" 
         ? predictions.original 
         : predictions.augmentation[predToGet];
@@ -27,6 +33,7 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel)
     const isCorrect = predictedLabel === actualLabel;
     const colorScale = isCorrect ? correctColorScale : incorrectColorScale;
 
+	// uses a global color scale
     let color;
     if (predictedProbability >= 0.75) {
         color = colorScale[3];
@@ -38,6 +45,7 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel)
         color = colorScale[0];
     }
     
+    // Add the test for the percentage for accessibility
     const percentage = (predictedProbability * 100).toFixed(0);
     const label = `${formatLabel(predictedLabel)} ${percentage}%`;
 
@@ -45,10 +53,12 @@ function getColorAndPredictionLabel(predToGet = "original", XRayID, actualLabel)
 }
 
 
+// Draws the augment images without predictions
 function DrawAugments(resultsCont, xrID) {
 	console.log(`xrID is ${xrID}`)
 	let bmargin = "5px";
 	
+	// Augment (test) images are uniquely identified by the ID
 	for (const range of testRangeData) {
         if (xrID >= range.low && xrID <= range.high) {
             xrayActual = range.label;
@@ -63,8 +73,11 @@ function DrawAugments(resultsCont, xrID) {
         { id: "#xraythumb6", label: "Sharpen x 2.0", img: `./images/Data_aug_200x150/test/${xrayActual}/${xrayActual}(${xrID})_200x150_augsh.jpg` }
     ];
     
+    // Clear the container and draw the augments
+    // DrawAugments draws all predictions, but does not display them
 	resultsCont.html("");
 	
+	// Draw the overall model prediction
 	const overallPrediction = resultsCont.append("div")
 		.attr("class", "overall-prediction")
 		.style("display", "none");
@@ -80,8 +93,7 @@ function DrawAugments(resultsCont, xrID) {
 		.html(`Model Prediction: ${formatLabel(predictedLabel)}<br>Actual Label: ${formatLabel(xrayActual)}`)
 		.style("color", predictionColor);
 
-//     resultsCont.selectAll(".xray-thumbnail-container").remove();
-
+	// Add predictions, thumbnail images, and labels for augments 
     let thumbnailContainer = resultsCont.append("div")
 			.classed("xray-thumbnail-container", true);
 	    
@@ -90,6 +102,7 @@ function DrawAugments(resultsCont, xrID) {
 	const resHFlip = getColorAndPredictionLabel("horizontal_flip", xrID, xrayActual);
 	const res5deg = getColorAndPredictionLabel("5_degree_rotation", xrID, xrayActual);
 
+	// thumbs 1 and 2 are drawn individually bc of the flip and rotate
 	thumbnailContainer.append("p")
 		.text(resHFlip.label)
 		.classed("prediction", true)
@@ -153,6 +166,7 @@ function DrawAugments(resultsCont, xrID) {
 		.style("margin-bottom", bmargin)
 		.style("background-color", "#bef4fd99");
 	
+	// The rest are drawn iteratively
 	const resBlur = getColorAndPredictionLabel("increase_blur", xrID, xrayActual);
 	const resBright = getColorAndPredictionLabel("increase_brightness", xrID, xrayActual);
 	const resSharp = getColorAndPredictionLabel("increase_sharpness", xrID, xrayActual);
@@ -213,10 +227,11 @@ function DrawAugments(resultsCont, xrID) {
 
 }
 
-
+// Draws Similar Xrays feature
 function DrawSimilarXrays(resultsCont, oneSimXray, xrayAct, xrayID) {
-	console.log(oneSimXray)
 	let bmargin = "5px";
+	
+	// Create the meta data for the draw
     let TBs = [];
     let toDraw = {};
     oneSimXray.forEach(item => {
@@ -224,14 +239,11 @@ function DrawSimilarXrays(resultsCont, oneSimXray, xrayAct, xrayID) {
 		const simID = item[1];
 		const simLabel = item[0];
 	
-		console.log(`Label: ${simLabel}, ID: ${simID}`);
-	
 		toDraw = { id: "#xraythumb1", label: `${simLabel}(${simID})`, img: `./images/Data_200x150/train/${simLabel}/${simLabel}(${simID})_200x150.jpg` },
 		TBs.push(toDraw);
 	});
     
-    console.log(TBs);
-
+	// Clear the container and draw the similars and labels iteratively
 	resultsCont.html("");
 		
 	const overallPrediction = resultsCont.append("div")
@@ -272,7 +284,7 @@ function DrawSimilarXrays(resultsCont, oneSimXray, xrayAct, xrayID) {
 	});
 }
 
-
+// Draw the buttons for Augments, Results, and Similars and handle clicks
 function DrawMiddleButtons(){
 	const mwidth = rescontainer.node().clientWidth * widthPercentage - 5;
 	const mmargin = 0
@@ -283,6 +295,7 @@ function DrawMiddleButtons(){
 		.append("svg")
 		.attr("height", middleColumnHeight * heightPercentage)
 		
+	// Draw Similar button
 	const simButton = resbuttons.append("path")
 		.attr("d", `
 			M ${mmargin + 2 * mwidth}, 5 
@@ -307,6 +320,7 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
+	// Draw Results button
 	const resultsButton = resbuttons.append("rect")
 		.attr("x", mmargin + mwidth)
 		.attr("y", 5)
@@ -327,6 +341,7 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 
+	// Draw Augments Button
 	const augButton = resbuttons.append("path")
 		.attr("d", `
 			M ${mmargin + mwidth}, 5
@@ -351,9 +366,7 @@ function DrawMiddleButtons(){
 		.style("font-size", "16px")
 		.style("font-weight", "bold");
 	
-	
-	
-	
+	// Click handlers
 	resultsLabel.on("click", () => {
 		const tbnails = document.querySelectorAll('.prediction');
 		const selectedTbnail = tbnails[0];
@@ -404,7 +417,7 @@ function DrawMiddleButtons(){
 	});
 }
 
-
+// Click helper function for Results  button click handler
 function turnOnResults() {
 	const predictionDiv = rescontainer.select(".overall-prediction");
 	const predictions = rescontainer.selectAll(".prediction");

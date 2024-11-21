@@ -1,3 +1,4 @@
+// This is real data either produced by the model or collected manually
 const testRangeData = [
 			{ label: "PNEUMONIA", low: 3418, high:4272 },
 			{ label: "NORMAL", low: 1266, high:1582 },
@@ -14,49 +15,6 @@ const samples = [
     552, 1266, 1451, 520, 1308, 561, 4062, 
     3497, 3904, 3451, 490, 1462
 ];
-
-const allSimilarsData = {
-    490: {
-        similars: [
-            ["COVID19", 222],
-            ["COVID19", 234],
-            ["NORMAL", 234],
-            ["COVID19", 357],
-            ["PNEUMONIA", 234],
-            ["COVID19", 234],
-        ]
-    },
-    552: {
-        similars: [
-            ["COVID19", 222],
-            ["COVID19", 344],
-            ["NORMAL", 234],
-            ["COVID19", 357],
-            ["PNEUMONIA", 234],
-            ["COVID19", 234],
-        ]
-    },
-    1266: {
-        similars: [
-            ["COVID19", 222],
-            ["PNEUMONIA", 124],
-            ["NORMAL", 234],
-            ["PNEUMONIA", 357],
-            ["PNEUMONIA", 234],
-            ["COVID19", 234],
-        ]
-    },
-    1451: {
-        similars: [
-            ["NORMAL", 323],
-            ["NORMAL", 234],
-            ["NORMAL", 234],
-            ["NORMAL", 357],
-            ["NORMAL", 339],
-            ["NORMAL", 427],
-        ]
-    },
-};
 
 const metricsData = [
 	{

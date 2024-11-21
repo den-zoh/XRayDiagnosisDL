@@ -1,6 +1,4 @@
-// this hardcoded data was produced by the model/API
-// future iterations of the vis will connect to the API
-// on the fly and generate this data in real time
+// This is real data which was produced by the model, via the API
 const predData= {
     490: {
         "predicted_label": "NORMAL",
