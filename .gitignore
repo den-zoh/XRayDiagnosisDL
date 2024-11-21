@@ -1,6 +1,8 @@
 .DS_Store
 CODE/model/__pycache__
 CODE/api/__pycache__
+model/__pycache__
+api/__pycache__
 
 # Model is too large to commit to git
 CODE/api/cnn.pth
